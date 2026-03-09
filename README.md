@@ -1,17 +1,48 @@
-# fiap_hackathon
+# SeniorEase | FIAP Hackathon
 
-A new Flutter project.
+SeniorEase é uma plataforma digital inclusiva para pessoas idosas, com foco em acessibilidade.
 
-## Getting Started
+## Stack
 
-This project is a starting point for a Flutter application.
+- `Flutter` como plataforma única para `Web`, `Android` e `iOS`.
+- `Clean Architecture` por feature: `domain`, `data`, `presentation`.
+- `Provider` para estado/apresentação.
+- `get_it` manual para injeção de dependência (`ContainerRegistry`).
+- `go_router` para navegação e regras de redirect por sessão.
+- `Firebase` (`firebase_core`, `firebase_auth`, `cloud_firestore`) como backend inicial.
 
-A few resources to get you started if this is your first Flutter project:
+## Estrutura do projeto
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```text
+lib/
+ ├─ core/
+ │   ├─ errors/            # falhas padronizadas + mapper para mensagem amigável
+ │   └─ result/            # Result<T> (Success/FailureResult)
+ ├─ app/
+ │   ├─ di/                # ContainerRegistry (get_it manual)
+ │   ├─ navigation/        # AppRouter + constantes de rota
+ │   └─ presentation/      # Home shell base
+ ├─ features/
+ │   └─ auth/
+ │      └─ {domain,data,presentation}  # exemplo Clean Architecture
+ ├─ firebase_options.dart  # opções Firebase (placeholder nesta fase)
+ └─ main.dart              # bootstrap Firebase + DI + Providers + Router
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Como executar
+
+1. Instalar dependências:
+   - `flutter pub get`
+2. Configurar Firebase:
+   - `firebase login`
+   - `flutterfire configure --platforms=android,ios,web --project=<id-projeto>`
+3. Executar:
+   - `flutter run -d chrome` (Web)
+   - `flutter run` (Mobile, com emulador/simulador ativo)
+
+## Qualidade e validação
+
+- Análise estática:
+  - `flutter analyze`
+- Testes:
+  - `flutter test`
