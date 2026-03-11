@@ -17,5 +17,14 @@ ThemeData buildTheme(AppDesignSystem ds) {
       onError: ds.colors.feedbackDangerLight,
       onSurface: ds.colors.primary,
     ),
+    textTheme: TextTheme(
+      bodySmall: ds.typography.caption,
+      labelMedium: ds.typography.label,
+      bodyMedium: ds.typography.bodyMedium,
+      bodyLarge: ds.typography.bodyLarge,
+      titleMedium: ds.typography.headingMedium,
+      titleLarge: ds.typography.headingLarge,
+      displayLarge: ds.typography.display,
+    ),
   );
 }

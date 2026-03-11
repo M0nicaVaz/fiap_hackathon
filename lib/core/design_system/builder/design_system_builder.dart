@@ -5,6 +5,21 @@ import 'package:fiap_hackathon/core/design_system/model/app_spacing.dart';
 import 'package:fiap_hackathon/core/design_system/model/app_typography.dart';
 import 'package:fiap_hackathon/core/design_system/tokens/spacing.dart';
 import 'package:fiap_hackathon/core/design_system/tokens/typography.dart';
+import 'package:flutter/material.dart';
+
+TextStyle _textStyle({
+  required double size,
+  required FontWeight weight,
+  required AccessibilityScale scale,
+}) {
+  return TextStyle(
+    fontFamily: 'Open Sans',
+    fontSize: size * scale.fontScale,
+    fontWeight: weight,
+    height: TypographyTokens.lineHeight,
+    letterSpacing: TypographyTokens.letterSpacing,
+  );
+}
 
 AppDesignSystem buildDesignSystem({
   required AppColors colors,
@@ -22,19 +37,41 @@ AppDesignSystem buildDesignSystem({
       xxxl: SpacingTokens.xxxl * scale.uiScale,
     ),
     typography: AppTypography(
-      fontFamily: 'Open Sans',
-      caption: TypographyTokens.caption * scale.fontScale,
-      label: TypographyTokens.label * scale.fontScale,
-      bodyMedium: TypographyTokens.bodyMedium * scale.fontScale,
-      bodyLarge: TypographyTokens.bodyLarge * scale.fontScale,
-      headingMedium: TypographyTokens.headingMedium * scale.fontScale,
-      headingLarge: TypographyTokens.headingLarge * scale.fontScale,
-      display: TypographyTokens.display * scale.fontScale,
-      regular: TypographyTokens.regular,
-      semiBold: TypographyTokens.semiBold,
-      bold: TypographyTokens.bold,
-      lineHeight: TypographyTokens.lineHeight,
-      letterSpacing: TypographyTokens.letterSpacing,
+      caption: _textStyle(
+        size: TypographyTokens.caption,
+        weight: TypographyTokens.regular,
+        scale: scale,
+      ),
+      label: _textStyle(
+        size: TypographyTokens.label,
+        weight: TypographyTokens.regular,
+        scale: scale,
+      ),
+      bodyMedium: _textStyle(
+        size: TypographyTokens.bodyMedium,
+        weight: TypographyTokens.regular,
+        scale: scale,
+      ),
+      bodyLarge: _textStyle(
+        size: TypographyTokens.bodyLarge,
+        weight: TypographyTokens.regular,
+        scale: scale,
+      ),
+      headingMedium: _textStyle(
+        size: TypographyTokens.headingMedium,
+        weight: TypographyTokens.semiBold,
+        scale: scale,
+      ),
+      headingLarge: _textStyle(
+        size: TypographyTokens.headingLarge,
+        weight: TypographyTokens.bold,
+        scale: scale,
+      ),
+      display: _textStyle(
+        size: TypographyTokens.display,
+        weight: TypographyTokens.bold,
+        scale: scale,
+      ),
     ),
   );
 }

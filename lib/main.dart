@@ -1,5 +1,6 @@
 import 'package:fiap_hackathon/core/design_system/accessibility/scale.dart';
 import 'package:fiap_hackathon/core/design_system/builder/design_system_builder.dart';
+import 'package:fiap_hackathon/core/design_system/builder/theme_builder.dart';
 import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
 import 'package:fiap_hackathon/core/design_system/themes/color_themes.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -69,10 +70,7 @@ class _SeniorEaseAppState extends State<SeniorEaseApp> {
             ds: ds,
             child: MaterialApp.router(
               title: 'SeniorEase',
-              theme: ThemeData(
-                scaffoldBackgroundColor: ds.colors.background,
-                useMaterial3: true,
-              ),
+              theme: buildTheme(ds),
               routerConfig: _router,
             ),
           );
