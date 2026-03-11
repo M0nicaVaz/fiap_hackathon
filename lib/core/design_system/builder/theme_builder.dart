@@ -8,14 +8,14 @@ ThemeData buildTheme(AppDesignSystem ds) {
 
     colorScheme: ColorScheme(
       brightness: Brightness.light,
-      primary: ds.colors.,
-      onPrimary: onPrimary,
-      secondary: secondary,
-      onSecondary: onSecondary,
-      error: error,
-      onError: onError,
-      surface: surface,
-      onSurface: onSurface,
+      primary: ds.colors.primary,
+      secondary: ds.colors.secondary,
+      error: ds.colors.feedbackDanger,
+      surface: ds.colors.surface,
+      onPrimary: ds.colors.primaryInverse,
+      onSecondary: ds.colors.secondaryInverse,
+      onError: ds.colors.feedbackDangerLight,
+      onSurface: ds.colors.primary,
     ),
   );
 }
