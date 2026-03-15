@@ -3,6 +3,7 @@ import 'package:fiap_hackathon/core/design_system/model/app_colors.dart';
 import 'package:fiap_hackathon/core/design_system/model/app_design_system.dart';
 import 'package:fiap_hackathon/core/design_system/model/app_spacing.dart';
 import 'package:fiap_hackathon/core/design_system/model/app_typography.dart';
+import 'package:fiap_hackathon/core/design_system/tokens/icons.dart';
 import 'package:fiap_hackathon/core/design_system/tokens/spacing.dart';
 import 'package:fiap_hackathon/core/design_system/tokens/typography.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ TextStyle _textStyle({
     fontFamily: 'Open Sans',
     fontSize: size * scale.fontScale,
     fontWeight: weight,
-    height: TypographyTokens.lineHeight,
+    height: TypographyTokens.lineHeight * scale.fontScale,
     letterSpacing: TypographyTokens.letterSpacing,
   );
 }
@@ -27,6 +28,12 @@ AppDesignSystem buildDesignSystem({
 }) {
   return AppDesignSystem(
     colors: colors,
+    scale: scale,
+    icons: AppIcons(
+      sm: 16 * scale.uiScale,
+      md: 24 * scale.uiScale,
+      lg: 32 * scale.uiScale,
+    ),
     spacing: AppSpacing(
       xs: SpacingTokens.xs * scale.uiScale,
       sm: SpacingTokens.sm * scale.uiScale,

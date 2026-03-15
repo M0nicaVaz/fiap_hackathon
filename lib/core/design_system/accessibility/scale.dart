@@ -6,7 +6,12 @@ class AccessibilityScale {
 }
 
 AccessibilityScale scaleFromFont(double fontScale) {
-  final uiScale = 1 + ((fontScale - 1) * 0.5);
+  final clampedFont = fontScale.clamp(0.8, 1.8).toDouble();
 
-  return AccessibilityScale(fontScale: fontScale, uiScale: uiScale);
+  final uiScale = 1 + ((clampedFont - 1) * 0.5);
+
+  return AccessibilityScale(
+    fontScale: clampedFont,
+    uiScale: uiScale.clamp(1.0, 1.4),
+  );
 }

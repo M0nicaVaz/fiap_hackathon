@@ -5,12 +5,12 @@ enum ColorThemeType { standard, highContrast, extremeContrast }
 
 final colorThemes = {
   ColorThemeType.standard: AppColors(
-    background: BaseColors.neutral0,
+    background: BaseColors.neutral200,
     feedbackInfoLight: BaseColors.blue0,
     feedbackSuccessLight: BaseColors.green0,
     feedbackWarningLight: BaseColors.orange0,
     feedbackDangerLight: BaseColors.red0,
-    surface: BaseColors.neutral100,
+    surface: BaseColors.neutral0,
     textPrimary: BaseColors.neutral700,
     textSecondary: BaseColors.neutral500,
     textDisabled: BaseColors.neutral400,
@@ -21,7 +21,7 @@ final colorThemes = {
     feedbackDanger: BaseColors.red100,
     primary: BaseColors.blue300,
     primaryInverse: BaseColors.neutral0,
-    secondary: BaseColors.blue200,
+    secondary: BaseColors.blue100,
     secondaryInverse: BaseColors.blue800,
     disabled: BaseColors.neutral400,
   ),

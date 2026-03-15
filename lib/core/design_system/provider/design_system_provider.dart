@@ -13,6 +13,9 @@ class DesignSystemProvider extends InheritedWidget {
   static AppDesignSystem of(BuildContext context) {
     final provider = context
         .dependOnInheritedWidgetOfExactType<DesignSystemProvider>();
+
+    assert(provider != null, 'DesignSystemProvider not found in context');
+
     return provider!.ds;
   }
 
