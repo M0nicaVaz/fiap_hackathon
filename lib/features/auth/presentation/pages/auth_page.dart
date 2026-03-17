@@ -1,3 +1,4 @@
+import 'package:fiap_hackathon/core/design_system/widgets/ds_button/ds_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -25,14 +26,15 @@ class AuthPage extends StatelessWidget {
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
-                child: FilledButton(
+                child: DSButton(
+                  label: "Entrar",
+                  variant: DSButtonVariant.secondary,
                   onPressed: () async {
                     await context.read<AuthSessionStateProvider>().enter();
                     if (context.mounted) {
                       context.go(AppRoutes.home);
                     }
                   },
-                  child: const Text('Entrar'),
                 ),
               ),
             ],
