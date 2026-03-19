@@ -37,7 +37,7 @@ class DSButtonStyle {
     return base(context).merge(
       ElevatedButton.styleFrom(
         backgroundColor: ds.colors.secondary,
-        foregroundColor: ds.colors.textPrimary,
+        foregroundColor: ds.colors.secondaryInverse,
         side: BorderSide(color: ds.colors.secondary),
       ),
     );
