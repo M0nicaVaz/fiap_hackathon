@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/providers/auth_session_controller.dart';
+import '../features/home/pages/customization_page.dart';
 import '../presentation/app_shell.dart';
 import 'app_routes.dart';
 
@@ -66,6 +67,14 @@ class AppRouter {
         pageBuilder: (context, state) => customPage<void>(
           key: state.pageKey,
           child: const AppShell(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.customization,
+        name: AppRouteNames.customization,
+        pageBuilder: (context, state) => customPage<void>(
+          key: state.pageKey,
+          child: const CustomizationPage(),
         ),
       ),
     ],

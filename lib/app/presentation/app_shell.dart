@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../navigation/app_routes.dart';
 import '../../features/auth/presentation/providers/auth_session_controller.dart';
 import 'providers/home_example_provider.dart';
 
@@ -13,6 +15,10 @@ class AppShell extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Home'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => context.push(AppRoutes.customization),
+          ),
           TextButton(
             onPressed: () {
               context.read<AuthSessionStateProvider>().signOut();

@@ -2,12 +2,15 @@ import 'package:fiap_hackathon/core/design_system/model/app_design_system.dart';
 import 'package:flutter/material.dart';
 
 ThemeData buildTheme(AppDesignSystem ds) {
+  final brightness =
+      ThemeData.estimateBrightnessForColor(ds.colors.background);
+
   return ThemeData(
     useMaterial3: true,
     scaffoldBackgroundColor: ds.colors.background,
-
+    brightness: brightness,
     colorScheme: ColorScheme(
-      brightness: Brightness.light,
+      brightness: brightness,
       primary: ds.colors.primary,
       secondary: ds.colors.secondary,
       error: ds.colors.feedbackDanger,
@@ -17,6 +20,7 @@ ThemeData buildTheme(AppDesignSystem ds) {
       onError: ds.colors.feedbackDangerLight,
       onSurface: ds.colors.textPrimary,
     ),
+    iconTheme: IconThemeData(color: ds.colors.textPrimary),
     textTheme: TextTheme(
       bodySmall: ds.typography.caption,
       bodyMedium: ds.typography.bodyMedium,
