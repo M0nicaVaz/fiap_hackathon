@@ -2,8 +2,7 @@ import 'package:fiap_hackathon/core/design_system/model/app_design_system.dart';
 import 'package:flutter/material.dart';
 
 ThemeData buildTheme(AppDesignSystem ds) {
-  final brightness =
-      ThemeData.estimateBrightnessForColor(ds.colors.background);
+  final brightness = ThemeData.estimateBrightnessForColor(ds.colors.background);
 
   return ThemeData(
     useMaterial3: true,

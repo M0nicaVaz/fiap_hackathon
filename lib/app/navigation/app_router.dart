@@ -48,26 +48,20 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.splash,
         name: AppRouteNames.splash,
-        pageBuilder: (context, state) => customPage<void>(
-          key: state.pageKey,
-          child: const SplashPage(),
-        ),
+        pageBuilder: (context, state) =>
+            customPage<void>(key: state.pageKey, child: const SplashPage()),
       ),
       GoRoute(
         path: AppRoutes.auth,
         name: AppRouteNames.auth,
-        pageBuilder: (context, state) => customPage<void>(
-          key: state.pageKey,
-          child: const AuthPage(),
-        ),
+        pageBuilder: (context, state) =>
+            customPage<void>(key: state.pageKey, child: const AuthPage()),
       ),
       GoRoute(
         path: AppRoutes.home,
         name: AppRouteNames.home,
-        pageBuilder: (context, state) => customPage<void>(
-          key: state.pageKey,
-          child: const AppShell(),
-        ),
+        pageBuilder: (context, state) =>
+            customPage<void>(key: state.pageKey, child: const AppShell()),
       ),
       GoRoute(
         path: AppRoutes.customization,

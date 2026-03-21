@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 class DsSectionTitle extends StatelessWidget {
   final String title;
 
-  const DsSectionTitle({
-    super.key,
-    required this.title,
-  });
+  const DsSectionTitle({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {

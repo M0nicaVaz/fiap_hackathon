@@ -25,7 +25,8 @@ class AccessibilityRepository {
   static const _keyColorTheme = 'accessibility_color_theme';
   static const _keyIsBasicMode = 'accessibility_is_basic_mode';
   static const _keyReinforcedFeedback = 'accessibility_reinforced_feedback';
-  static const _keyAdditionalConfirmation = 'accessibility_additional_confirmation';
+  static const _keyAdditionalConfirmation =
+      'accessibility_additional_confirmation';
 
   final SharedPreferences _prefs;
 
@@ -37,7 +38,10 @@ class AccessibilityRepository {
     await _prefs.setInt(_keyColorTheme, settings.colorTheme.index);
     await _prefs.setBool(_keyIsBasicMode, settings.isBasicMode);
     await _prefs.setBool(_keyReinforcedFeedback, settings.reinforcedFeedback);
-    await _prefs.setBool(_keyAdditionalConfirmation, settings.additionalConfirmation);
+    await _prefs.setBool(
+      _keyAdditionalConfirmation,
+      settings.additionalConfirmation,
+    );
   }
 
   AccessibilitySettings loadSettings() {
@@ -46,12 +50,14 @@ class AccessibilityRepository {
     final colorThemeIndex = _prefs.getInt(_keyColorTheme) ?? 0;
     final isBasicMode = _prefs.getBool(_keyIsBasicMode) ?? false;
     final reinforcedFeedback = _prefs.getBool(_keyReinforcedFeedback) ?? false;
-    final additionalConfirmation = _prefs.getBool(_keyAdditionalConfirmation) ?? false;
+    final additionalConfirmation =
+        _prefs.getBool(_keyAdditionalConfirmation) ?? false;
 
     return AccessibilitySettings(
       fontScale: fontScale,
       spacingScale: spacingScale,
-      colorTheme: ColorThemeType.values[colorThemeIndex.clamp(0, ColorThemeType.values.length - 1)],
+      colorTheme: ColorThemeType
+          .values[colorThemeIndex.clamp(0, ColorThemeType.values.length - 1)],
       isBasicMode: isBasicMode,
       reinforcedFeedback: reinforcedFeedback,
       additionalConfirmation: additionalConfirmation,

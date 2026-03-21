@@ -29,12 +29,12 @@ class DsSliderTile extends StatelessWidget {
           children: [
             Icon(icon, color: ds.colors.primary, size: ds.icons.md),
             SizedBox(width: ds.spacing.sm),
-            Expanded(
-              child: Text(title, style: ds.typography.bodyLarge),
-            ),
+            Expanded(child: Text(title, style: ds.typography.bodyLarge)),
             Text(
               '${(value * 100).toInt()}%',
-              style: ds.typography.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+              style: ds.typography.bodyMedium.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),

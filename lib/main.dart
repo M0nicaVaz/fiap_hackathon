@@ -31,10 +31,12 @@ Future<void> main() async {
   final accessibilityRepository = AccessibilityRepository(prefs);
   final initialAccessibilitySettings = accessibilityRepository.loadSettings();
 
-  runApp(SeniorEaseApp(
-    initialAccessibilitySettings: initialAccessibilitySettings,
-    accessibilityRepository: accessibilityRepository,
-  ));
+  runApp(
+    SeniorEaseApp(
+      initialAccessibilitySettings: initialAccessibilitySettings,
+      accessibilityRepository: accessibilityRepository,
+    ),
+  );
 }
 
 class SeniorEaseApp extends StatefulWidget {

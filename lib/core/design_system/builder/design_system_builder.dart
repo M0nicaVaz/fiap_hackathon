@@ -34,11 +34,7 @@ AppDesignSystem buildDesignSystem({
   return AppDesignSystem(
     colors: colors,
     scale: scale,
-    icons: AppIcons(
-      sm: 16 * uiScale,
-      md: 24 * uiScale,
-      lg: 32 * uiScale,
-    ),
+    icons: AppIcons(sm: 16 * uiScale, md: 24 * uiScale, lg: 32 * uiScale),
     spacing: AppSpacing(
       xs: SpacingTokens.xs * uiScale,
       sm: SpacingTokens.sm * uiScale,
