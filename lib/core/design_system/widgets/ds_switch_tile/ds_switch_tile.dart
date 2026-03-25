@@ -19,10 +19,11 @@ class DsSwitchTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final ds = context.ds;
     return SwitchListTile(
+      contentPadding: EdgeInsets.all(0),
       title: Row(
         children: [
           Icon(icon, color: ds.colors.primary, size: ds.icons.md),
-          SizedBox(width: ds.spacing.sm),
+          SizedBox(width: ds.spacing.lg),
           Expanded(child: Text(title, style: ds.typography.bodyLarge)),
         ],
       ),

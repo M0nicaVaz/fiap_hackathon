@@ -1,4 +1,5 @@
 import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
+import 'package:fiap_hackathon/core/design_system/widgets/ds_icon/ds_icon.dart';
 import 'package:flutter/material.dart';
 
 class DsSliderTile extends StatelessWidget {
@@ -27,8 +28,8 @@ class DsSliderTile extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(icon, color: ds.colors.primary, size: ds.icons.md),
-            SizedBox(width: ds.spacing.sm),
+            DSIcon(icon, color: ds.colors.primary, size: DSIconSize.lg),
+            SizedBox(width: ds.spacing.lg),
             Expanded(child: Text(title, style: ds.typography.bodyLarge)),
             Text(
               '${(value * 100).toInt()}%',

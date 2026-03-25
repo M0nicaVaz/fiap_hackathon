@@ -1,6 +1,7 @@
 import 'package:fiap_hackathon/core/design_system/accessibility/accessibility_controller.dart';
 import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
 import 'package:fiap_hackathon/core/design_system/themes/color_themes.dart';
+import 'package:fiap_hackathon/core/design_system/widgets/ds_button/ds_button.dart';
 import 'package:fiap_hackathon/core/design_system/widgets/ds_card/ds_card.dart';
 import 'package:fiap_hackathon/core/design_system/widgets/ds_section_title/ds_section_title.dart';
 import 'package:fiap_hackathon/core/design_system/widgets/ds_slider_tile/ds_slider_tile.dart';
@@ -68,6 +69,7 @@ class CustomizationPage extends StatelessWidget {
                         style: ds.typography.bodyMedium,
                       ),
                       value: theme,
+                      contentPadding: EdgeInsets.all(0),
                       groupValue: controller.colorTheme,
                       onChanged: (value) => controller.setTheme(value!),
                       activeColor: ds.colors.primary,
@@ -117,23 +119,10 @@ class CustomizationPage extends StatelessWidget {
                         width: isWeb
                             ? constraints.maxWidth * 0.3
                             : double.infinity,
-                        child: OutlinedButton(
+                        child: DSButton(
+                          variant: DSButtonVariant.danger,
                           onPressed: () => _handleReset(context, controller),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: ds.colors.feedbackDanger,
-                            side: BorderSide(color: ds.colors.feedbackDanger),
-                            minimumSize: Size(0, ds.spacing.xxl),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            'Resetar para o Padrão',
-                            style: ds.typography.bodyLarge.copyWith(
-                              color: ds.colors.feedbackDanger,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          label: 'Resetar para o Padrão',
                         ),
                       );
                     },

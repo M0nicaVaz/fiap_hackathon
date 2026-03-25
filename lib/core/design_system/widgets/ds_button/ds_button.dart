@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'ds_button_style.dart';
 
-enum DSButtonVariant { primary, secondary, danger, ghost }
+enum DSButtonVariant { primary, secondary, tertiary, danger, ghost }
 
 class DSButton extends StatelessWidget {
   final String label;
@@ -29,8 +29,21 @@ class DSButton extends StatelessWidget {
 
     final button = switch (variant) {
       DSButtonVariant.primary => _buildElevated(context, disabled),
-      DSButtonVariant.secondary => _buildOutlined(context, disabled),
-      DSButtonVariant.danger => _buildDanger(context, disabled),
+      DSButtonVariant.secondary => _buildElevated(
+        context,
+        disabled,
+        style: DSButtonStyle.secondary(context),
+      ),
+      DSButtonVariant.tertiary => _buildOutlined(
+        context,
+        onPressed,
+        style: DSButtonStyle.tertiary(context),
+      ),
+      DSButtonVariant.danger => _buildElevated(
+        context,
+        disabled,
+        style: DSButtonStyle.danger(context),
+      ),
       DSButtonVariant.ghost => _buildGhost(context, disabled),
     };
 
@@ -41,13 +54,17 @@ class DSButton extends StatelessWidget {
     return button;
   }
 
-  Widget _buildElevated(BuildContext context, VoidCallback? onPressed) {
-    final style = DSButtonStyle.primary(context);
+  Widget _buildElevated(
+    BuildContext context,
+    VoidCallback? onPressed, {
+    ButtonStyle? style,
+  }) {
+    final buttonStyle = style ?? DSButtonStyle.primary(context);
 
     if (icon != null) {
       return ElevatedButton.icon(
         onPressed: onPressed,
-        style: style,
+        style: buttonStyle,
         icon: Icon(icon),
         label: _buildLabel(),
       );
@@ -55,18 +72,22 @@ class DSButton extends StatelessWidget {
 
     return ElevatedButton(
       onPressed: onPressed,
-      style: style,
+      style: buttonStyle,
       child: _buildLabel(),
     );
   }
 
-  Widget _buildOutlined(BuildContext context, VoidCallback? onPressed) {
-    final style = DSButtonStyle.secondary(context);
+  Widget _buildOutlined(
+    BuildContext context,
+    VoidCallback? onPressed, {
+    ButtonStyle? style,
+  }) {
+    final buttonStyle = style ?? DSButtonStyle.tertiary(context);
 
     if (icon != null) {
       return OutlinedButton.icon(
         onPressed: onPressed,
-        style: style,
+        style: buttonStyle,
         icon: Icon(icon),
         label: _buildLabel(),
       );
@@ -74,26 +95,7 @@ class DSButton extends StatelessWidget {
 
     return OutlinedButton(
       onPressed: onPressed,
-      style: style,
-      child: _buildLabel(),
-    );
-  }
-
-  Widget _buildDanger(BuildContext context, VoidCallback? onPressed) {
-    final style = DSButtonStyle.danger(context);
-
-    if (icon != null) {
-      return ElevatedButton.icon(
-        onPressed: onPressed,
-        style: style,
-        icon: Icon(icon),
-        label: _buildLabel(),
-      );
-    }
-
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: style,
+      style: buttonStyle,
       child: _buildLabel(),
     );
   }

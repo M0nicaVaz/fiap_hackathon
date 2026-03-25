@@ -14,7 +14,7 @@ class DsSectionTitle extends StatelessWidget {
       child: Text(
         title.toUpperCase(),
         style: ds.typography.label.copyWith(
-          color: ds.colors.textSecondary,
+          color: ds.colors.textPrimary,
           fontWeight: FontWeight.bold,
         ),
       ),

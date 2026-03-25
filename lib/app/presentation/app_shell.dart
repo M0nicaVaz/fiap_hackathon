@@ -1,3 +1,7 @@
+import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
+import 'package:fiap_hackathon/core/design_system/widgets/ds_button/ds_button.dart';
+import 'package:fiap_hackathon/core/design_system/widgets/ds_icon/ds_icon.dart';
+import 'package:fiap_hackathon/core/design_system/widgets/ds_icon_button/ds_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -11,23 +15,29 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ds = context.ds;
+
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight:
+            kToolbarHeight + ((ds.scale.fontScale - 1.0) * 40).clamp(0.0, 60.0),
         title: const Text('Home'),
         actions: [
           TextButton(
             onPressed: () => context.push(AppRoutes.activities),
             child: const Text('Atividades'),
           ),
-          IconButton(
-            icon: const Icon(Icons.settings),
+          DSIconButton(
+            size: DSIconSize.lg,
+            icon: Icons.settings,
             onPressed: () => context.push(AppRoutes.customization),
           ),
-          TextButton(
+          DSButton(
+            variant: DSButtonVariant.ghost,
             onPressed: () {
               context.read<AuthSessionStateProvider>().signOut();
             },
-            child: const Text('Sair'),
+            label: 'Sair',
           ),
         ],
       ),
@@ -57,11 +67,11 @@ class _HomeExampleContent extends StatelessWidget {
           const SizedBox(height: 20),
           Text('Resultado do provider: ${provider.clickCount}'),
           const SizedBox(height: 12),
-          FilledButton(
+          DSButton(
             onPressed: () {
               context.read<HomeExampleProvider>().increment();
             },
-            child: const Text('Disparar ação do provider'),
+            label: 'Disparar ação do provider',
           ),
         ],
       ),
