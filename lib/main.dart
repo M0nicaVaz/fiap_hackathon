@@ -7,7 +7,9 @@ import 'package:fiap_hackathon/core/design_system/themes/color_themes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,12 +17,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app/di/container_registry.dart';
 import 'app/navigation/app_router.dart';
 import 'app/presentation/providers/home_example_provider.dart';
+import 'features/activities/di/activities_injection.dart';
+import 'features/activities/presentation/providers/tasks_controller.dart';
 import 'features/auth/presentation/providers/auth_session_controller.dart';
 import 'package:fiap_hackathon/core/design_system/accessibility/accessibility_controller.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('pt_BR', null);
   if (kIsWeb) {
     usePathUrlStrategy();
   }
@@ -33,6 +38,7 @@ Future<void> main() async {
 
   runApp(
     SeniorEaseApp(
+      prefs: prefs,
       initialAccessibilitySettings: initialAccessibilitySettings,
       accessibilityRepository: accessibilityRepository,
     ),
@@ -40,14 +46,16 @@ Future<void> main() async {
 }
 
 class SeniorEaseApp extends StatefulWidget {
-  final AccessibilitySettings? initialAccessibilitySettings;
-  final AccessibilityRepository? accessibilityRepository;
-
   const SeniorEaseApp({
     super.key,
+    required this.prefs,
     this.initialAccessibilitySettings,
     this.accessibilityRepository,
   });
+
+  final SharedPreferences prefs;
+  final AccessibilitySettings? initialAccessibilitySettings;
+  final AccessibilityRepository? accessibilityRepository;
 
   @override
   State<SeniorEaseApp> createState() => _SeniorEaseAppState();
@@ -80,6 +88,9 @@ class _SeniorEaseAppState extends State<SeniorEaseApp> {
             repository: widget.accessibilityRepository,
           ),
         ),
+        ChangeNotifierProvider<TasksController>(
+          create: (_) => createTasksController(widget.prefs),
+        ),
       ],
       child: Consumer<AccessibilityController>(
         builder: (context, accessibility, _) {
@@ -99,6 +110,13 @@ class _SeniorEaseAppState extends State<SeniorEaseApp> {
               title: 'SeniorEase',
               theme: buildTheme(ds),
               routerConfig: _router,
+              locale: const Locale('pt', 'BR'),
+              supportedLocales: const [Locale('pt', 'BR')],
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
             ),
           );
         },

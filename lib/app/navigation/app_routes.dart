@@ -3,6 +3,7 @@ abstract final class AppRouteNames {
   static const auth = 'auth';
   static const home = 'home';
   static const customization = 'customization';
+  static const activities = 'activities';
 }
 
 abstract final class AppRoutes {
@@ -11,4 +12,5 @@ abstract final class AppRoutes {
   static const auth = '/auth';
   static const home = '/home';
   static const customization = '/customization';
+  static const activities = '/activities';
 }

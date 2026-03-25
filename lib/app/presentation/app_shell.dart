@@ -15,6 +15,10 @@ class AppShell extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Home'),
         actions: [
+          TextButton(
+            onPressed: () => context.push(AppRoutes.activities),
+            child: const Text('Atividades'),
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => context.push(AppRoutes.customization),

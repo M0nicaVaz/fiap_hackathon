@@ -5,8 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/providers/auth_session_controller.dart';
-import '../features/home/pages/customization_page.dart';
-import '../presentation/app_shell.dart';
+import '../../app/features/home/pages/customization_page.dart';
+import '../../app/presentation/app_shell.dart';
+import '../../features/activities/presentation/pages/activities_page.dart';
 import 'app_routes.dart';
 
 Page<T> customPage<T>({
@@ -69,6 +70,14 @@ class AppRouter {
         pageBuilder: (context, state) => customPage<void>(
           key: state.pageKey,
           child: const CustomizationPage(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.activities,
+        name: AppRouteNames.activities,
+        pageBuilder: (context, state) => customPage<void>(
+          key: state.pageKey,
+          child: const ActivitiesPage(),
         ),
       ),
     ],
