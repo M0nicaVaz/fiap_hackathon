@@ -15,7 +15,7 @@ class DSButtonStyle {
       minimumSize: WidgetStatePropertyAll(Size(64, ds.spacing.xxl)),
       textStyle: WidgetStatePropertyAll(ds.typography.headingMedium),
       shape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
       ),
     );
   }
@@ -32,13 +32,14 @@ class DSButtonStyle {
   }
 
   static ButtonStyle secondary(BuildContext context) {
-    final ds = context.ds;
+    return base(context).merge(ElevatedButton.styleFrom());
+  }
 
+  static ButtonStyle tertiary(BuildContext context) {
+    final ds = context.ds;
     return base(context).merge(
-      ElevatedButton.styleFrom(
-        backgroundColor: ds.colors.secondary,
-        foregroundColor: ds.colors.secondaryInverse,
-        side: BorderSide(color: ds.colors.secondary),
+      OutlinedButton.styleFrom(
+        side: BorderSide(color: ds.colors.primary, width: 2),
       ),
     );
   }
@@ -57,8 +58,11 @@ class DSButtonStyle {
   static ButtonStyle ghost(BuildContext context) {
     final ds = context.ds;
 
-    return base(
-      context,
-    ).merge(TextButton.styleFrom(foregroundColor: ds.colors.primary));
+    return base(context).merge(
+      TextButton.styleFrom(
+        foregroundColor: ds.colors.primary,
+        padding: EdgeInsets.all(0),
+      ),
+    );
   }
 }

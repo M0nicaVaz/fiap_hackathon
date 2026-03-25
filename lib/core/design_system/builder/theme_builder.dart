@@ -8,6 +8,26 @@ ThemeData buildTheme(AppDesignSystem ds) {
     useMaterial3: true,
     scaffoldBackgroundColor: ds.colors.background,
     brightness: brightness,
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      floatingLabelStyle: TextStyle(
+        fontSize: ds.typography.headingLarge.fontSize,
+      ),
+      labelStyle: TextStyle(fontSize: ds.typography.bodyLarge.fontSize),
+      focusColor: ds.colors.primary,
+      focusedErrorBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: ds.colors.feedbackDanger),
+        borderRadius: BorderRadius.all(Radius.circular(99)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(width: 2, color: ds.colors.disabled),
+        borderRadius: BorderRadius.circular(99),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(99)),
+        gapPadding: 8,
+      ),
+    ),
     colorScheme: ColorScheme(
       brightness: brightness,
       primary: ds.colors.primary,
