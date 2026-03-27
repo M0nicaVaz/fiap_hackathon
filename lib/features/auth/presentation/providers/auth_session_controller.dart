@@ -44,6 +44,12 @@ class AuthSessionController extends ChangeNotifier
   String? get errorMessage => null;
 
   void _bootstrap() {
+    const autoLogin = bool.fromEnvironment('DEBUG_AUTO_LOGIN');
+    if (autoLogin) {
+      _status = AuthSessionStatus.authenticated;
+      notifyListeners();
+      return;
+    }
     _status = _checkSessionUseCase()
         ? AuthSessionStatus.authenticated
         : AuthSessionStatus.unauthenticated;
