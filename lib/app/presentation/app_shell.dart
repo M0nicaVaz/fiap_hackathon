@@ -23,9 +23,10 @@ class AppShell extends StatelessWidget {
             kToolbarHeight + ((ds.scale.fontScale - 1.0) * 40).clamp(0.0, 60.0),
         title: const Text('Home'),
         actions: [
-          TextButton(
+          DSButton(
+            variant: DSButtonVariant.ghost,
             onPressed: () => context.push(AppRoutes.activities),
-            child: const Text('Atividades'),
+            label: 'Atividades',
           ),
           DSIconButton(
             size: DSIconSize.lg,
