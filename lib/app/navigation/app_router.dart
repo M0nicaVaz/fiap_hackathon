@@ -93,7 +93,7 @@ class AppRouter {
       case AuthSessionStatus.unknown:
         return isAtSplash ? null : AppRoutes.splash;
       case AuthSessionStatus.unauthenticated:
-        if (isAtSplash || isAtHome) {
+        if (!isAtAuth) {
           return AppRoutes.auth;
         }
         return null;
