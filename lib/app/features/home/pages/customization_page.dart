@@ -19,16 +19,6 @@ class CustomizationPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: ds.colors.background,
-      appBar: AppBar(
-        title: Text(
-          'Personalização da Experiência',
-          style: ds.typography.headingMedium.copyWith(
-            color: ds.colors.textPrimary,
-          ),
-        ),
-        backgroundColor: ds.colors.surface,
-        iconTheme: IconThemeData(color: ds.colors.textPrimary),
-      ),
       body: Consumer<AccessibilityController>(
         builder: (context, controller, child) {
           return ListView(

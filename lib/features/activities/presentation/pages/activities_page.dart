@@ -11,7 +11,7 @@ import 'package:fiap_hackathon/features/activities/presentation/pages/task_edito
 import 'package:fiap_hackathon/features/activities/presentation/pages/task_wizard_page.dart';
 import 'package:fiap_hackathon/features/activities/presentation/providers/tasks_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:provider/provider.dart';
 
 class ActivitiesPage extends StatefulWidget {
@@ -62,7 +62,9 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
         backgroundColor: ds.colors.surface,
         content: Text(
           'Lembrete: "${task.title}". Toque em "Abrir" para ver a atividade.',
-          style: ds.typography.bodyMedium.copyWith(color: ds.colors.textPrimary),
+          style: ds.typography.bodyMedium.copyWith(
+            color: ds.colors.textPrimary,
+          ),
         ),
         actions: [
           TextButton(
@@ -89,10 +91,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: ds.colors.surface,
-          title: Text(
-            'Excluir atividade?',
-            style: ds.typography.headingMedium,
-          ),
+          title: Text('Excluir atividade?', style: ds.typography.headingMedium),
           content: Text(
             'Esta ação não pode ser desfeita.',
             style: ds.typography.bodyMedium,
@@ -133,17 +132,13 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
 
   Future<void> _openEditor(BuildContext context, {Task? task}) async {
     await Navigator.of(context).push<void>(
-      MaterialPageRoute(
-        builder: (ctx) => TaskEditorPage(initialTask: task),
-      ),
+      MaterialPageRoute(builder: (ctx) => TaskEditorPage(initialTask: task)),
     );
   }
 
   Future<void> _openWizard(BuildContext context, Task task) async {
     await Navigator.of(context).push<void>(
-      MaterialPageRoute(
-        builder: (ctx) => TaskWizardPage(taskId: task.id),
-      ),
+      MaterialPageRoute(builder: (ctx) => TaskWizardPage(taskId: task.id)),
     );
   }
 
@@ -153,10 +148,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: ds.colors.surface,
-        title: Text(
-          'Abrir assistente?',
-          style: ds.typography.headingMedium,
-        ),
+        title: Text('Abrir assistente?', style: ds.typography.headingMedium),
         content: Text(
           'As etapas desta atividade serão mostradas uma a uma.',
           style: ds.typography.bodyMedium,
@@ -183,10 +175,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: ds.colors.surface,
-        title: Text(
-          'Concluir atividade?',
-          style: ds.typography.headingMedium,
-        ),
+        title: Text('Concluir atividade?', style: ds.typography.headingMedium),
         content: Text(
           'Esta atividade será registrada como concluída e movida para o histórico.',
           style: ds.typography.bodyMedium,
@@ -228,175 +217,186 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
 
     return Scaffold(
       backgroundColor: ds.colors.background,
-      appBar: AppBar(
-        backgroundColor: ds.colors.surface,
-        foregroundColor: ds.colors.textPrimary,
-        title: Text(
-          'SeniorEase — Tarefas',
-          style: ds.typography.headingMedium.copyWith(fontWeight: FontWeight.w800),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
-        ),
-      ),
       body: ColoredBox(
         color: ds.colors.background,
         child: LayoutBuilder(
           builder: (context, constraints) {
-          final isWide = constraints.maxWidth >= 900;
-          return Stack(
-            children: [
-              SingleChildScrollView(
-                padding: EdgeInsets.only(bottom: isWide ? ds.spacing.xl : 100),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(height: ds.spacing.md),
-                    LayoutPageContainer(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          if (isWide) _SearchBar(controller: _searchController, onChanged: () => setState(() {})),
-                          if (isWide) SizedBox(height: ds.spacing.md),
-                          LayoutTasksPageHeader(
-                            title: 'Tarefas do dia',
-                            subtitle:
-                                'Gerencie seu bem-estar com uma lista clara: pendentes e concluídas.',
-                            onAddTask: () => _openEditor(context),
-                            showWideAddButton: isWide,
-                          ),
-                          if (!isWide) ...[
-                            SizedBox(height: ds.spacing.md),
-                            FilledButton.icon(
-                              onPressed: () => _openEditor(context),
-                              style: FilledButton.styleFrom(
-                                backgroundColor: ds.colors.primary,
-                                foregroundColor: ds.colors.primaryInverse,
-                                minimumSize: Size(double.infinity, ds.spacing.xxl * 1.1),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
+            final isWide = constraints.maxWidth >= 900;
+            return Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: EdgeInsets.only(
+                    bottom: isWide ? ds.spacing.xl : 100,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: ds.spacing.md),
+                      LayoutPageContainer(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (isWide)
+                              _SearchBar(
+                                controller: _searchController,
+                                onChanged: () => setState(() {}),
                               ),
-                              icon: Icon(Icons.add_task, size: ds.icons.md),
-                              label: Text(
-                                'Nova atividade',
-                                style: ds.typography.bodyLarge.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
+                            if (isWide) SizedBox(height: ds.spacing.md),
+                            LayoutTasksPageHeader(
+                              title: 'Tarefas do dia',
+                              subtitle:
+                                  'Gerencie seu bem-estar com uma lista clara: pendentes e concluídas.',
+                              onAddTask: () => _openEditor(context),
+                              showWideAddButton: isWide,
                             ),
-                          ],
-                          SizedBox(height: ds.spacing.lg),
-                          _TabBar(
-                            tabIndex: _tabIndex,
-                            pendingCount: filtered.length,
-                            completedCount: history.length,
-                            onChanged: (i) => setState(() => _tabIndex = i),
-                          ),
-                          SizedBox(height: ds.spacing.lg),
-                          if (_tabIndex == 0)
+                            if (!isWide) ...[
+                              SizedBox(height: ds.spacing.md),
+                              DSButton(
+                                onPressed: () => _openEditor(context),
+                                icon: Icons.add_task,
+                                label: 'Nova atividade',
+                                fullWidth: true,
+                              ),
+                            ],
+                            SizedBox(height: ds.spacing.lg),
                             _StatsRow(
                               pending: filtered.length,
                               completed: history.length,
-                              reminders: tasks.where((t) => t.reminderAt != null).length,
+                              reminders: tasks
+                                  .where((t) => t.reminderAt != null)
+                                  .length,
                             ),
-                          if (_tabIndex == 0) SizedBox(height: ds.spacing.lg),
-                          DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: ds.colors.surface,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: ds.colors.disabled.withValues(alpha: 0.35),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: ds.colors.textPrimary.withValues(alpha: 0.04),
-                                  blurRadius: 16,
-                                  offset: const Offset(0, 4),
+                            SizedBox(height: ds.spacing.lg),
+                            _TabBar(
+                              tabIndex: _tabIndex,
+                              pendingCount: filtered.length,
+                              completedCount: history.length,
+                              onChanged: (i) => setState(() => _tabIndex = i),
+                            ),
+                            SizedBox(height: ds.spacing.lg),
+                            DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: ds.colors.surface,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: ds.colors.disabled.withValues(
+                                    alpha: 0.35,
+                                  ),
                                 ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: _tabIndex == 0
-                                  ? (filtered.isEmpty
-                                      ? Padding(
-                                          padding: EdgeInsets.all(ds.spacing.xxl),
-                                          child: Text(
-                                            'Nenhuma atividade pendente.\n'
-                                            'Use "Nova atividade" para criar.',
-                                            textAlign: TextAlign.center,
-                                            style: ds.typography.bodyLarge.copyWith(
-                                              color: ds.colors.textSecondary,
-                                              height: 1.45,
-                                            ),
-                                          ),
-                                        )
-                                      : isWide
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: ds.colors.textPrimary.withValues(
+                                      alpha: 0.04,
+                                    ),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: _tabIndex == 0
+                                    ? (filtered.isEmpty
+                                          ? Padding(
+                                              padding: EdgeInsets.all(
+                                                ds.spacing.xxl,
+                                              ),
+                                              child: Text(
+                                                'Nenhuma atividade pendente.\n'
+                                                'Use "Nova atividade" para criar.',
+                                                textAlign: TextAlign.center,
+                                                style: ds.typography.bodyLarge
+                                                    .copyWith(
+                                                      color: ds
+                                                          .colors
+                                                          .textSecondary,
+                                                      height: 1.45,
+                                                    ),
+                                              ),
+                                            )
+                                          : isWide
                                           ? _PendingTable(
                                               tasks: filtered,
-                                              onEdit: (t) => _openEditor(context, task: t),
-                                              onDelete: (t) => _confirmDelete(context, t),
-                                              onWizard: (t) => _confirmOpenWizard(context, t),
-                                              onComplete: (t) => _completeQuick(context, t),
+                                              onEdit: (t) =>
+                                                  _openEditor(context, task: t),
+                                              onDelete: (t) =>
+                                                  _confirmDelete(context, t),
+                                              onWizard: (t) =>
+                                                  _confirmOpenWizard(
+                                                    context,
+                                                    t,
+                                                  ),
+                                              onComplete: (t) =>
+                                                  _completeQuick(context, t),
                                               formatReminder: _formatReminder,
                                               progressText: _progressText,
                                             )
                                           : _PendingMobileList(
                                               tasks: filtered,
-                                              onEdit: (t) => _openEditor(context, task: t),
-                                              onDelete: (t) => _confirmDelete(context, t),
-                                              onWizard: (t) => _confirmOpenWizard(context, t),
-                                              onComplete: (t) => _completeQuick(context, t),
+                                              onEdit: (t) =>
+                                                  _openEditor(context, task: t),
+                                              onDelete: (t) =>
+                                                  _confirmDelete(context, t),
+                                              onWizard: (t) =>
+                                                  _confirmOpenWizard(
+                                                    context,
+                                                    t,
+                                                  ),
+                                              onComplete: (t) =>
+                                                  _completeQuick(context, t),
                                               formatReminder: _formatReminder,
                                             ))
-                                  : (history.isEmpty
-                                      ? Padding(
-                                          padding: EdgeInsets.all(ds.spacing.xxl),
-                                          child: Text(
-                                            'Nenhuma atividade concluída ainda.',
-                                            textAlign: TextAlign.center,
-                                            style: ds.typography.bodyLarge.copyWith(
-                                              color: ds.colors.textSecondary,
-                                            ),
-                                          ),
-                                        )
-                                      : _HistoryList(
-                                          entries: history,
-                                          formatDate: _formatDateTime,
-                                        )),
-                            ),
-                          ),
-                          if (_tabIndex == 0 && filtered.isNotEmpty)
-                            Padding(
-                              padding: EdgeInsets.only(top: ds.spacing.md),
-                              child: Text(
-                                'Mostrando ${filtered.length} pendente(s)',
-                                style: ds.typography.bodyMedium.copyWith(
-                                  color: ds.colors.textSecondary,
-                                ),
+                                    : (history.isEmpty
+                                          ? Padding(
+                                              padding: EdgeInsets.all(
+                                                ds.spacing.xxl,
+                                              ),
+                                              child: Text(
+                                                'Nenhuma atividade concluída ainda.',
+                                                textAlign: TextAlign.center,
+                                                style: ds.typography.bodyLarge
+                                                    .copyWith(
+                                                      color: ds
+                                                          .colors
+                                                          .textSecondary,
+                                                    ),
+                                              ),
+                                            )
+                                          : _HistoryList(
+                                              entries: history,
+                                              formatDate: _formatDateTime,
+                                            )),
                               ),
                             ),
-                        ],
+                            if (_tabIndex == 0 && filtered.isNotEmpty)
+                              Padding(
+                                padding: EdgeInsets.only(top: ds.spacing.md),
+                                child: Text(
+                                  'Mostrando ${filtered.length} pendente(s)',
+                                  style: ds.typography.bodyMedium.copyWith(
+                                    color: ds.colors.textSecondary,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              if (!isWide && _tabIndex == 0)
-                Positioned(
-                  right: ds.spacing.lg,
-                  bottom: ds.spacing.xxl + 8,
-                  child: FloatingActionButton(
-                    onPressed: () => _openEditor(context),
-                    backgroundColor: ds.colors.primary,
-                    foregroundColor: ds.colors.primaryInverse,
-                    child: Icon(Icons.add, size: ds.icons.lg * 1.25),
+                    ],
                   ),
                 ),
-            ],
-          );
+                if (!isWide && _tabIndex == 0)
+                  Positioned(
+                    right: ds.spacing.lg,
+                    bottom: ds.spacing.xxl + 8,
+                    child: FloatingActionButton(
+                      onPressed: () => _openEditor(context),
+                      backgroundColor: ds.colors.primary,
+                      foregroundColor: ds.colors.primaryInverse,
+                      child: Icon(Icons.add, size: ds.icons.lg * 1.25),
+                    ),
+                  ),
+              ],
+            );
           },
         ),
       ),
@@ -442,11 +442,15 @@ class _SearchBar extends StatelessWidget {
         fillColor: ds.colors.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(999),
-          borderSide: BorderSide(color: ds.colors.disabled.withValues(alpha: 0.35)),
+          borderSide: BorderSide(
+            color: ds.colors.disabled.withValues(alpha: 0.35),
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(999),
-          borderSide: BorderSide(color: ds.colors.disabled.withValues(alpha: 0.35)),
+          borderSide: BorderSide(
+            color: ds.colors.disabled.withValues(alpha: 0.35),
+          ),
         ),
         contentPadding: EdgeInsets.symmetric(
           horizontal: ds.spacing.lg,
@@ -492,7 +496,11 @@ class _TabBar extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, size: ds.icons.md, color: sel ? ds.colors.primary : ds.colors.textSecondary),
+                Icon(
+                  icon,
+                  size: ds.icons.md,
+                  color: sel ? ds.colors.primary : ds.colors.textSecondary,
+                ),
                 SizedBox(width: ds.spacing.sm),
                 Flexible(
                   child: Text(
@@ -558,10 +566,12 @@ class _StatsRow extends StatelessWidget {
     if (narrow) {
       return Column(
         children: children
-            .map((w) => Padding(
-                  padding: EdgeInsets.only(bottom: ds.spacing.sm),
-                  child: w,
-                ))
+            .map(
+              (w) => Padding(
+                padding: EdgeInsets.only(bottom: ds.spacing.sm),
+                child: w,
+              ),
+            )
             .toList(),
       );
     }
@@ -673,90 +683,106 @@ class _PendingTable extends StatelessWidget {
                 1: FlexColumnWidth(1.15),
                 2: FlexColumnWidth(1.1),
               },
-          border: TableBorder(
-            horizontalInside: BorderSide(color: ds.colors.disabled.withValues(alpha: 0.2)),
-          ),
-          children: [
-            TableRow(
-              decoration: BoxDecoration(color: ds.colors.background),
+              border: TableBorder(
+                horizontalInside: BorderSide(
+                  color: ds.colors.disabled.withValues(alpha: 0.2),
+                ),
+              ),
               children: [
-                _th(context, 'TAREFA'),
-                _th(context, 'HORÁRIO'),
-                _th(context, 'AÇÕES', align: TextAlign.end),
-              ],
-            ),
-            ...tasks.map((task) {
-              return TableRow(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(ds.spacing.lg),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                TableRow(
+                  decoration: BoxDecoration(color: ds.colors.background),
+                  children: [
+                    _th(context, 'TAREFA'),
+                    _th(context, 'HORÁRIO'),
+                    _th(context, 'AÇÕES', align: TextAlign.end),
+                  ],
+                ),
+                ...tasks.map((task) {
+                  return TableRow(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(ds.spacing.lg),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: ds.spacing.xs / 2),
-                              child: Icon(taskCategoryIcon(task.category), size: ds.icons.sm, color: ds.colors.primary),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    top: ds.spacing.xs / 2,
+                                  ),
+                                  child: Icon(
+                                    taskCategoryIcon(task.category),
+                                    size: ds.icons.sm,
+                                    color: ds.colors.primary,
+                                  ),
+                                ),
+                                SizedBox(width: ds.spacing.xs),
+                                Expanded(
+                                  child: Text(
+                                    task.title,
+                                    softWrap: true,
+                                    textWidthBasis: TextWidthBasis.parent,
+                                    style: ds.typography.headingMedium.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(width: ds.spacing.xs),
-                            Expanded(
-                              child: Text(
-                                task.title,
+                            if (task.description != null &&
+                                task.description!.isNotEmpty) ...[
+                              SizedBox(height: ds.spacing.xs),
+                              Text(
+                                task.description!,
                                 softWrap: true,
                                 textWidthBasis: TextWidthBasis.parent,
-                                style: ds.typography.headingMedium.copyWith(
-                                  fontWeight: FontWeight.w800,
+                                style: ds.typography.bodyMedium.copyWith(
+                                  color: ds.colors.textSecondary,
                                 ),
+                              ),
+                            ],
+                            SizedBox(height: ds.spacing.xs),
+                            Text(
+                              progressText(task),
+                              softWrap: true,
+                              textWidthBasis: TextWidthBasis.parent,
+                              style: ds.typography.caption.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: ds.colors.textSecondary,
                               ),
                             ),
                           ],
                         ),
-                        if (task.description != null && task.description!.isNotEmpty) ...[
-                          SizedBox(height: ds.spacing.xs),
-                          Text(
-                            task.description!,
-                            softWrap: true,
-                            textWidthBasis: TextWidthBasis.parent,
-                            style: ds.typography.bodyMedium.copyWith(
-                              color: ds.colors.textSecondary,
-                            ),
-                          ),
-                        ],
-                        SizedBox(height: ds.spacing.xs),
-                        Text(
-                          progressText(task),
-                          softWrap: true,
-                          textWidthBasis: TextWidthBasis.parent,
-                          style: ds.typography.caption.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: ds.colors.textSecondary,
-                          ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(ds.spacing.lg),
+                        child: task.reminderAt != null
+                            ? LayoutTimePill(
+                                label: formatReminder(task.reminderAt!),
+                              )
+                            : Text(
+                                '—',
+                                style: ds.typography.bodyMedium.copyWith(
+                                  color: ds.colors.textSecondary,
+                                ),
+                              ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(ds.spacing.md),
+                        child: _TableActions(
+                          task: task,
+                          onEdit: onEdit,
+                          onDelete: onDelete,
+                          onWizard: onWizard,
+                          onComplete: onComplete,
                         ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(ds.spacing.lg),
-                    child: task.reminderAt != null
-                        ? LayoutTimePill(label: formatReminder(task.reminderAt!))
-                        : Text('—', style: ds.typography.bodyMedium.copyWith(color: ds.colors.textSecondary)),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(ds.spacing.md),
-                    child: _TableActions(
-                      task: task,
-                      onEdit: onEdit,
-                      onDelete: onDelete,
-                      onWizard: onWizard,
-                      onComplete: onComplete,
-                    ),
-                  ),
-                ],
-              );
-            }),
-          ],
+                      ),
+                    ],
+                  );
+                }),
+              ],
             ),
           ),
         );
@@ -764,7 +790,11 @@ class _PendingTable extends StatelessWidget {
     );
   }
 
-  Widget _th(BuildContext context, String t, {TextAlign align = TextAlign.start}) {
+  Widget _th(
+    BuildContext context,
+    String t, {
+    TextAlign align = TextAlign.start,
+  }) {
     final ds = context.ds;
     return Padding(
       padding: EdgeInsets.all(ds.spacing.lg),
@@ -821,7 +851,10 @@ class _TableActions extends StatelessWidget {
         ),
         IconButton(
           onPressed: () => onDelete(task),
-          icon: Icon(Icons.delete_outline, color: context.ds.colors.feedbackDanger),
+          icon: Icon(
+            Icons.delete_outline,
+            color: context.ds.colors.feedbackDanger,
+          ),
           tooltip: 'Excluir',
         ),
       ],
@@ -857,7 +890,9 @@ class _PendingMobileList extends StatelessWidget {
       separatorBuilder: (_, _) => SizedBox(height: ds.spacing.md),
       itemBuilder: (context, i) {
         final task = tasks[i];
-        final time = task.reminderAt != null ? formatReminder(task.reminderAt!) : null;
+        final time = task.reminderAt != null
+            ? formatReminder(task.reminderAt!)
+            : null;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -954,10 +989,7 @@ class _MobileActions extends StatelessWidget {
 }
 
 class _HistoryList extends StatelessWidget {
-  const _HistoryList({
-    required this.entries,
-    required this.formatDate,
-  });
+  const _HistoryList({required this.entries, required this.formatDate});
 
   final List<ActivityHistoryEntry> entries;
   final String Function(DateTime) formatDate;
