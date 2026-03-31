@@ -6,6 +6,7 @@ import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/providers/auth_session_controller.dart';
 import '../../app/features/home/pages/customization_page.dart';
+import '../../app/features/home/pages/home_page.dart';
 import '../../app/presentation/app_shell.dart';
 import '../../features/activities/presentation/pages/activities_page.dart';
 import 'app_routes.dart';
@@ -58,27 +59,48 @@ class AppRouter {
         pageBuilder: (context, state) =>
             customPage<void>(key: state.pageKey, child: const AuthPage()),
       ),
-      GoRoute(
-        path: AppRoutes.home,
-        name: AppRouteNames.home,
-        pageBuilder: (context, state) =>
-            customPage<void>(key: state.pageKey, child: const AppShell()),
-      ),
-      GoRoute(
-        path: AppRoutes.customization,
-        name: AppRouteNames.customization,
-        pageBuilder: (context, state) => customPage<void>(
-          key: state.pageKey,
-          child: const CustomizationPage(),
-        ),
-      ),
-      GoRoute(
-        path: AppRoutes.activities,
-        name: AppRouteNames.activities,
-        pageBuilder: (context, state) => customPage<void>(
-          key: state.pageKey,
-          child: const ActivitiesPage(),
-        ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return AppShell(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.home,
+                name: AppRouteNames.home,
+                pageBuilder: (context, state) => customPage<void>(
+                  key: state.pageKey,
+                  child: const HomePage(),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.activities,
+                name: AppRouteNames.activities,
+                pageBuilder: (context, state) => customPage<void>(
+                  key: state.pageKey,
+                  child: const ActivitiesPage(),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.customization,
+                name: AppRouteNames.customization,
+                pageBuilder: (context, state) => customPage<void>(
+                  key: state.pageKey,
+                  child: const CustomizationPage(),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );
@@ -87,7 +109,6 @@ class AppRouter {
     final location = state.matchedLocation;
     final isAtSplash = location == AppRoutes.splash;
     final isAtAuth = location == AppRoutes.auth;
-    final isAtHome = location == AppRoutes.home;
 
     switch (_authSessionProvider.status) {
       case AuthSessionStatus.unknown:

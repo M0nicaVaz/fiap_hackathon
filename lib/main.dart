@@ -16,7 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app/di/container_registry.dart';
 import 'app/navigation/app_router.dart';
-import 'app/presentation/providers/home_example_provider.dart';
+
 import 'features/activities/di/activities_injection.dart';
 import 'features/activities/presentation/providers/tasks_controller.dart';
 import 'features/auth/presentation/providers/auth_session_controller.dart';
@@ -79,9 +79,7 @@ class _SeniorEaseAppState extends State<SeniorEaseApp> {
         ListenableProvider<AuthSessionStateProvider>.value(
           value: _authSessionController,
         ),
-        ChangeNotifierProvider<HomeExampleProvider>(
-          create: (_) => HomeExampleProvider(),
-        ),
+
         ChangeNotifierProvider(
           create: (_) => AccessibilityController(
             initialSettings: widget.initialAccessibilitySettings,

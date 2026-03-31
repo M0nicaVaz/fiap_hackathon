@@ -34,7 +34,7 @@ final colorThemes = {
     feedbackDangerLight: BaseColors.red0,
     surface: BaseColors.blue500,
     textPrimary: BaseColors.neutral0,
-    textSecondary: BaseColors.blue700,
+    textSecondary: BaseColors.neutral100,
     textDisabled: BaseColors.neutral300,
     textInverse: BaseColors.blue700,
     feedbackInfo: BaseColors.blue300,
