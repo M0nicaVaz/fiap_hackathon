@@ -1,7 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../features/accessibility_preferences/data/datasources/shared_preferences_accessibility_preferences_data_source.dart';
+import '../../features/accessibility_preferences/data/repositories/shared_preferences_accessibility_preferences_repository.dart';
+import '../../features/accessibility_preferences/domain/repositories/accessibility_preferences_repository.dart';
+import '../../features/accessibility_preferences/domain/usecases/load_accessibility_settings_use_case.dart';
+import '../../features/accessibility_preferences/domain/usecases/save_accessibility_settings_use_case.dart';
+import '../../features/accessibility_preferences/presentation/providers/accessibility_preferences_controller.dart';
+import '../../features/activities/data/datasources/shared_preferences_tasks_local_data_source.dart';
+import '../../features/activities/data/datasources/tasks_local_data_source.dart';
+import '../../features/activities/data/repositories/tasks_repository_impl.dart';
+import '../../features/activities/domain/repositories/tasks_repository.dart';
+import '../../features/activities/domain/usecases/complete_task_use_case.dart';
+import '../../features/activities/domain/usecases/create_task_use_case.dart';
+import '../../features/activities/domain/usecases/delete_task_use_case.dart';
+import '../../features/activities/domain/usecases/get_activity_history_use_case.dart';
+import '../../features/activities/domain/usecases/save_task_progress_use_case.dart';
+import '../../features/activities/domain/usecases/update_task_use_case.dart';
+import '../../features/activities/domain/usecases/watch_tasks_use_case.dart';
+import '../../features/activities/presentation/providers/tasks_controller.dart';
 import '../../features/auth/data/repositories/in_memory_auth_repository.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/usecases/check_session_use_case.dart';
@@ -17,11 +36,11 @@ abstract final class ContainerRegistry {
 
   static T get<T extends Object>() => _getIt<T>();
 
-  static Future<void> setup() async {
+  static Future<void> setup({required SharedPreferences preferences}) async {
     if (_isSetup) return;
 
-    _registerCore();
-    _registerPresentation();
+    _registerCore(preferences);
+    _registerFeatures();
 
     _isSetup = true;
   }
@@ -31,15 +50,16 @@ abstract final class ContainerRegistry {
     _isSetup = false;
   }
 
-  static void _registerCore() {
+  static void _registerCore(SharedPreferences preferences) {
     _getIt
+      ..registerLazySingleton<SharedPreferences>(() => preferences)
       ..registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance)
       ..registerLazySingleton<FirebaseFirestore>(
         () => FirebaseFirestore.instance,
       );
   }
 
-  static void _registerPresentation() {
+  static void _registerFeatures() {
     _getIt
       ..registerLazySingleton<AuthRepository>(InMemoryAuthRepository.new)
       ..registerLazySingleton(() => CheckSessionUseCase(_getIt()))
@@ -50,6 +70,44 @@ abstract final class ContainerRegistry {
           checkSessionUseCase: _getIt(),
           enterUseCase: _getIt(),
           signOutUseCase: _getIt(),
+        ),
+      )
+      ..registerLazySingleton(
+        () => SharedPreferencesAccessibilityPreferencesDataSource(_getIt()),
+      )
+      ..registerLazySingleton<AccessibilityPreferencesRepository>(
+        () => SharedPreferencesAccessibilityPreferencesRepository(_getIt()),
+      )
+      ..registerLazySingleton(() => LoadAccessibilitySettingsUseCase(_getIt()))
+      ..registerLazySingleton(() => SaveAccessibilitySettingsUseCase(_getIt()))
+      ..registerLazySingleton(
+        () => AccessibilityPreferencesController(
+          loadSettingsUseCase: _getIt(),
+          saveSettingsUseCase: _getIt(),
+        ),
+      )
+      ..registerLazySingleton<TasksLocalDataSource>(
+        () => SharedPreferencesTasksLocalDataSource(_getIt()),
+      )
+      ..registerLazySingleton<TasksRepository>(
+        () => TasksRepositoryImpl(_getIt()),
+      )
+      ..registerLazySingleton(() => WatchTasksUseCase(_getIt()))
+      ..registerLazySingleton(() => CreateTaskUseCase(_getIt()))
+      ..registerLazySingleton(() => UpdateTaskUseCase(_getIt()))
+      ..registerLazySingleton(() => DeleteTaskUseCase(_getIt()))
+      ..registerLazySingleton(() => CompleteTaskUseCase(_getIt()))
+      ..registerLazySingleton(() => GetActivityHistoryUseCase(_getIt()))
+      ..registerLazySingleton(() => SaveTaskProgressUseCase(_getIt()))
+      ..registerLazySingleton(
+        () => TasksController(
+          watchTasksUseCase: _getIt(),
+          createTaskUseCase: _getIt(),
+          updateTaskUseCase: _getIt(),
+          deleteTaskUseCase: _getIt(),
+          completeTaskUseCase: _getIt(),
+          getActivityHistoryUseCase: _getIt(),
+          saveTaskProgressUseCase: _getIt(),
         ),
       );
   }

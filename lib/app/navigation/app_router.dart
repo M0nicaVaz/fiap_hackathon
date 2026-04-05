@@ -2,13 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/accessibility_preferences/presentation/pages/customization_page.dart';
+import '../../features/activities/presentation/pages/activities_page.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/providers/auth_session_controller.dart';
-import '../../app/features/home/pages/customization_page.dart';
 import '../../app/features/home/pages/home_page.dart';
 import '../../app/presentation/app_shell.dart';
-import '../../features/activities/presentation/pages/activities_page.dart';
 import 'app_routes.dart';
 
 Page<T> customPage<T>({

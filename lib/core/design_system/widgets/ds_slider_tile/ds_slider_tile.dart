@@ -45,7 +45,7 @@ class DsSliderTile extends StatelessWidget {
           max: max,
           divisions: 12,
           activeColor: ds.colors.primary,
-          inactiveColor: ds.colors.disabled.withOpacity(0.3),
+          inactiveColor: ds.colors.disabled.withValues(alpha: 0.3),
           onChanged: onChanged,
         ),
       ],

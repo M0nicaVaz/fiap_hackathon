@@ -1,4 +1,3 @@
-import 'package:fiap_hackathon/core/design_system/accessibility/accessibility_controller.dart';
 import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
 import 'package:fiap_hackathon/core/design_system/themes/color_themes.dart';
 import 'package:fiap_hackathon/core/design_system/widgets/ds_button/ds_button.dart';
@@ -10,6 +9,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/accessibility_preferences_controller.dart';
+
 class CustomizationPage extends StatelessWidget {
   const CustomizationPage({super.key});
 
@@ -19,7 +20,7 @@ class CustomizationPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: ds.colors.background,
-      body: Consumer<AccessibilityController>(
+      body: Consumer<AccessibilityPreferencesController>(
         builder: (context, controller, child) {
           return ListView(
             padding: EdgeInsets.all(ds.spacing.lg),
@@ -36,7 +37,7 @@ class CustomizationPage extends StatelessWidget {
                       onChanged: controller.setFontScale,
                       icon: Icons.format_size,
                     ),
-                    Divider(color: ds.colors.disabled.withOpacity(0.2)),
+                    Divider(color: ds.colors.disabled.withValues(alpha: 0.2)),
                     DsSliderTile(
                       title: 'Espaçamento entre Elementos',
                       value: controller.spacingScale,
@@ -51,20 +52,26 @@ class CustomizationPage extends StatelessWidget {
               SizedBox(height: ds.spacing.lg),
               const DsSectionTitle(title: 'Contraste'),
               DsCard(
-                child: Column(
-                  children: ColorThemeType.values.map((theme) {
-                    return RadioListTile<ColorThemeType>(
-                      title: Text(
-                        _getThemeName(theme),
-                        style: ds.typography.bodyMedium,
-                      ),
-                      value: theme,
-                      contentPadding: EdgeInsets.all(0),
-                      groupValue: controller.colorTheme,
-                      onChanged: (value) => controller.setTheme(value!),
-                      activeColor: ds.colors.primary,
-                    );
-                  }).toList(),
+                child: RadioGroup<ColorThemeType>(
+                  groupValue: controller.colorTheme,
+                  onChanged: (value) {
+                    if (value != null) {
+                      controller.setTheme(value);
+                    }
+                  },
+                  child: Column(
+                    children: ColorThemeType.values.map((theme) {
+                      return RadioListTile<ColorThemeType>(
+                        title: Text(
+                          _getThemeName(theme),
+                          style: ds.typography.bodyMedium,
+                        ),
+                        value: theme,
+                        contentPadding: EdgeInsets.zero,
+                        activeColor: ds.colors.primary,
+                      );
+                    }).toList(),
+                  ),
                 ),
               ),
               SizedBox(height: ds.spacing.lg),
@@ -78,7 +85,7 @@ class CustomizationPage extends StatelessWidget {
                       onChanged: controller.setBasicMode,
                       icon: Icons.auto_awesome_motion,
                     ),
-                    Divider(color: ds.colors.disabled.withOpacity(0.2)),
+                    Divider(color: ds.colors.disabled.withValues(alpha: 0.2)),
                     DsSwitchTile(
                       title: 'Feedback Visual Reforçado',
                       value: controller.reinforcedFeedback,
@@ -127,7 +134,10 @@ class CustomizationPage extends StatelessWidget {
     );
   }
 
-  void _handleReset(BuildContext context, AccessibilityController controller) {
+  void _handleReset(
+    BuildContext context,
+    AccessibilityPreferencesController controller,
+  ) {
     if (controller.additionalConfirmation) {
       showDialog(
         context: context,
