@@ -1,9 +1,8 @@
 import 'dart:async';
-import 'package:fiap_hackathon/core/design_system/accessibility/accessibility_controller.dart';
 import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
-
 import 'package:fiap_hackathon/features/activities/domain/entities/task.dart';
 import 'package:fiap_hackathon/features/activities/presentation/providers/tasks_controller.dart';
+import 'package:fiap_hackathon/features/accessibility_preferences/presentation/providers/accessibility_preferences_controller.dart';
 import 'package:fiap_hackathon/features/activities/presentation/pages/task_editor_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -37,7 +36,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   String _formatTime(DateTime time) {
-    final hour = time.hour == 0 ? 12 : (time.hour > 12 ? time.hour - 12 : time.hour);
+    final hour = time.hour == 0
+        ? 12
+        : (time.hour > 12 ? time.hour - 12 : time.hour);
     final period = time.hour >= 12 ? 'PM' : 'AM';
     final minuteStr = time.minute.toString().padLeft(2, '0');
     return '$hour:$minuteStr $period';
@@ -45,11 +46,27 @@ class _HomePageState extends State<HomePage> {
 
   String _formatDate(DateTime date) {
     const days = [
-      'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'
+      'Segunda',
+      'Terça',
+      'Quarta',
+      'Quinta',
+      'Sexta',
+      'Sábado',
+      'Domingo',
     ];
     const months = [
-      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+      'Janeiro',
+      'Fevereiro',
+      'Março',
+      'Abril',
+      'Maio',
+      'Junho',
+      'Julho',
+      'Agosto',
+      'Setembro',
+      'Outubro',
+      'Novembro',
+      'Dezembro',
     ];
     final dayName = days[date.weekday - 1];
     final monthName = months[date.month - 1];
@@ -73,12 +90,12 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    final accessCtrl = context.watch<AccessibilityController>();
+    final accessCtrl = context.watch<AccessibilityPreferencesController>();
     final taskCtrl = context.watch<TasksController>();
 
     final pendingTasks = taskCtrl.tasks;
-    final reminders = taskCtrl.dueReminders.isNotEmpty 
-        ? taskCtrl.dueReminders 
+    final reminders = taskCtrl.dueReminders.isNotEmpty
+        ? taskCtrl.dueReminders
         : taskCtrl.tasks.where((t) => t.reminderAt != null).toList();
 
     return SingleChildScrollView(
@@ -119,7 +136,9 @@ class _HomePageState extends State<HomePage> {
   Widget _buildGreetingSection(BuildContext context) {
     final ds = context.ds;
     final hour = _now.hour;
-    final greeting = hour < 12 ? 'Bom dia' : (hour < 18 ? 'Boa tarde' : 'Boa noite');
+    final greeting = hour < 12
+        ? 'Bom dia'
+        : (hour < 18 ? 'Boa tarde' : 'Boa noite');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,14 +167,16 @@ class _HomePageState extends State<HomePage> {
 
     String timeUntilNextEvent() {
       DateTime now = DateTime.now();
-      var upcoming = tasks.where((t) => t.reminderAt != null && t.reminderAt!.isAfter(now)).toList();
+      var upcoming = tasks
+          .where((t) => t.reminderAt != null && t.reminderAt!.isAfter(now))
+          .toList();
       if (upcoming.isEmpty) {
         return 'Agenda livre no momento';
       }
       upcoming.sort((a, b) => a.reminderAt!.compareTo(b.reminderAt!));
       final next = upcoming.first.reminderAt!;
       final diff = next.difference(now);
-      
+
       if (diff.inDays > 0) {
         return 'Próximo agendamento em ${diff.inDays} d';
       } else if (diff.inHours > 0) {
@@ -261,9 +282,9 @@ class _HomePageState extends State<HomePage> {
           textColor: ds.colors.primaryInverse,
           iconColor: ds.colors.primaryInverse,
           onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => const TaskEditorPage(),
-            ));
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const TaskEditorPage()));
           },
         ),
         SizedBox(height: ds.spacing.md),
@@ -281,7 +302,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title, bool reinforced, {String? trailing}) {
+  Widget _buildSectionTitle(
+    BuildContext context,
+    String title,
+    bool reinforced, {
+    String? trailing,
+  }) {
     final ds = context.ds;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -314,7 +340,10 @@ class _HomePageState extends State<HomePage> {
       return _buildEmptyState(context, 'Nenhum lembrete para hoje.');
     }
     return Column(
-      children: reminders.take(3).map((task) => _TaskCard(task: task, isReminder: true)).toList(),
+      children: reminders
+          .take(3)
+          .map((task) => _TaskCard(task: task, isReminder: true))
+          .toList(),
     );
   }
 
@@ -325,7 +354,9 @@ class _HomePageState extends State<HomePage> {
       child: Center(
         child: Text(
           message,
-          style: ds.typography.bodyLarge.copyWith(color: ds.colors.textSecondary),
+          style: ds.typography.bodyLarge.copyWith(
+            color: ds.colors.textSecondary,
+          ),
         ),
       ),
     );
@@ -396,9 +427,13 @@ class _TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    
-    final iconColor = isReminder ? ds.colors.feedbackWarning : ds.colors.primary;
-    final iconData = isReminder ? Icons.notifications_active : Icons.radio_button_unchecked;
+
+    final iconColor = isReminder
+        ? ds.colors.feedbackWarning
+        : ds.colors.primary;
+    final iconData = isReminder
+        ? Icons.notifications_active
+        : Icons.radio_button_unchecked;
 
     String formatDue() {
       if (task.reminderAt == null) return 'Sem horário definido';
@@ -427,9 +462,11 @@ class _TaskCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => TaskEditorPage(initialTask: task),
-            ));
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => TaskEditorPage(initialTask: task),
+              ),
+            );
           },
           child: Padding(
             padding: EdgeInsets.symmetric(

@@ -16,6 +16,7 @@ SeniorEase é uma plataforma digital inclusiva para pessoas idosas, com foco em 
 ```text
 lib/
  ├─ core/
+ │   ├─ design_system/     # tokens, temas e widgets compartilhados
  │   ├─ errors/            # falhas padronizadas + mapper para mensagem amigável
  │   └─ result/            # Result<T> (Success/FailureResult)
  ├─ app/
@@ -23,11 +24,22 @@ lib/
  │   ├─ navigation/        # AppRouter + constantes de rota
  │   └─ presentation/      # Home shell base
  ├─ features/
+ │   ├─ accessibility_preferences/
+ │   │   └─ {domain,data,presentation}
+ │   ├─ activities/
+ │   │   └─ {domain,data,presentation}
  │   └─ auth/
- │      └─ {domain,data,presentation}  # exemplo Clean Architecture
+ │      └─ {domain,data,presentation}
  ├─ firebase_options.dart  # opções Firebase (placeholder nesta fase)
  └─ main.dart              # bootstrap Firebase + DI + Providers + Router
 ```
+
+## Direção arquitetural
+
+- `core` deve conter apenas elementos compartilhados e agnósticos de negócio.
+- Cada capability do produto deve viver em `features/<feature>`, inclusive estado, use cases e persistência.
+- `app` deve orquestrar bootstrap, DI e navegação, sem absorver lógica de feature.
+- A navegação principal agora usa `StatefulShellRoute`, com abas para `home`, `activities` e `accessibility_preferences`.
 
 ## Como executar
 
