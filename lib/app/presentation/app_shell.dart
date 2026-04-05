@@ -1,13 +1,13 @@
 import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
 import 'package:fiap_hackathon/core/design_system/widgets/ds_icon/ds_icon.dart';
 import 'package:fiap_hackathon/core/design_system/widgets/ds_icon_button/ds_icon_button.dart';
+import 'package:fiap_hackathon/features/accessibility_preferences/presentation/providers/accessibility_preferences_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:fiap_hackathon/core/design_system/widgets/ds_button/ds_button.dart';
 
 import '../../features/auth/presentation/providers/auth_session_controller.dart';
-import 'package:fiap_hackathon/core/design_system/accessibility/accessibility_controller.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.navigationShell});
@@ -24,7 +24,7 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    final accessCtrl = context.watch<AccessibilityController>();
+    final accessCtrl = context.watch<AccessibilityPreferencesController>();
     final isBasicMode = accessCtrl.isBasicMode;
 
     final items = [

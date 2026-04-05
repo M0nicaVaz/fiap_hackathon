@@ -29,7 +29,7 @@ class DsSwitchTile extends StatelessWidget {
       ),
       value: value,
       onChanged: onChanged,
-      activeColor: ds.colors.primary,
+      activeThumbColor: ds.colors.primary,
     );
   }
 }
