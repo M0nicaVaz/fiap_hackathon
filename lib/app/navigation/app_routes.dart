@@ -4,6 +4,7 @@ abstract final class AppRouteNames {
   static const home = 'home';
   static const customization = 'customization';
   static const activities = 'activities';
+  static const profile = 'profile';
 }
 
 abstract final class AppRoutes {
@@ -13,4 +14,5 @@ abstract final class AppRoutes {
   static const home = '/home';
   static const customization = '/customization';
   static const activities = '/activities';
+  static const profile = '/profile';
 }

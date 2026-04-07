@@ -25,6 +25,7 @@ import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/usecases/check_session_use_case.dart';
 import '../../features/auth/domain/usecases/enter_use_case.dart';
 import '../../features/auth/domain/usecases/enter_with_google_use_case.dart';
+import '../../features/auth/domain/usecases/register_use_case.dart';
 import '../../features/auth/domain/usecases/sign_out_use_case.dart';
 import '../../features/auth/presentation/providers/auth_session_controller.dart';
 import '../../features/profile/data/repositories/supabase_profile_repository.dart';
@@ -33,6 +34,7 @@ import '../../features/profile/domain/usecases/get_profile_use_case.dart';
 import '../../features/profile/domain/usecases/load_accessibility_from_supabase_use_case.dart';
 import '../../features/profile/domain/usecases/save_profile_use_case.dart';
 import '../../features/profile/domain/usecases/sync_accessibility_to_supabase_use_case.dart';
+import '../../features/profile/presentation/providers/profile_controller.dart';
 
 abstract final class ContainerRegistry {
   static final GetIt _getIt = GetIt.instance;
@@ -73,6 +75,7 @@ abstract final class ContainerRegistry {
       ..registerLazySingleton(() => CheckSessionUseCase(_getIt()))
       ..registerLazySingleton(() => EnterUseCase(_getIt()))
       ..registerLazySingleton(() => EnterWithGoogleUseCase(_getIt()))
+      ..registerLazySingleton(() => RegisterUseCase(_getIt()))
       ..registerLazySingleton(() => SignOutUseCase(_getIt()))
       ..registerLazySingleton(() => GetProfileUseCase(_getIt()))
       ..registerLazySingleton(() => SaveProfileUseCase(_getIt()))
@@ -85,8 +88,16 @@ abstract final class ContainerRegistry {
           checkSessionUseCase: _getIt(),
           enterUseCase: _getIt(),
           enterWithGoogleUseCase: _getIt(),
+          registerUseCase: _getIt(),
           signOutUseCase: _getIt(),
           authRepository: _getIt(),
+        ),
+      )
+      ..registerLazySingleton(
+        () => ProfileController(
+          getProfileUseCase: _getIt(),
+          saveProfileUseCase: _getIt(),
+          authProvider: _getIt<AuthSessionController>(),
         ),
       )
       ..registerLazySingleton(
@@ -101,6 +112,8 @@ abstract final class ContainerRegistry {
         () => AccessibilityPreferencesController(
           loadSettingsUseCase: _getIt(),
           saveSettingsUseCase: _getIt(),
+          syncToSupabaseUseCase: _getIt(),
+          authRepository: _getIt(),
         ),
       )
       ..registerLazySingleton<TasksLocalDataSource>(

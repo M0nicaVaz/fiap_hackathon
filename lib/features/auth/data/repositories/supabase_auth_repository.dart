@@ -27,6 +27,11 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> register({required String email, required String password}) async {
+    await _client.auth.signUp(email: email, password: password);
+  }
+
+  @override
   Future<void> enterWithGoogle() async {
     await _client.auth.signInWithOAuth(
       OAuthProvider.google,

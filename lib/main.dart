@@ -18,6 +18,7 @@ import 'app/navigation/app_router.dart';
 import 'features/activities/presentation/providers/tasks_controller.dart';
 import 'features/accessibility_preferences/presentation/providers/accessibility_preferences_controller.dart';
 import 'features/auth/presentation/providers/auth_session_controller.dart';
+import 'features/profile/presentation/providers/profile_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +48,7 @@ class _SeniorEaseAppState extends State<SeniorEaseApp> {
   late final AuthSessionController _authSessionController;
   late final AccessibilityPreferencesController _accessibilityController;
   late final TasksController _tasksController;
+  late final ProfileController _profileController;
   late final GoRouter _router;
 
   @override
@@ -56,6 +58,7 @@ class _SeniorEaseAppState extends State<SeniorEaseApp> {
     _accessibilityController =
         ContainerRegistry.get<AccessibilityPreferencesController>();
     _tasksController = ContainerRegistry.get<TasksController>();
+    _profileController = ContainerRegistry.get<ProfileController>();
     _router = AppRouter(authSessionProvider: _authSessionController).router;
   }
 
@@ -70,6 +73,9 @@ class _SeniorEaseAppState extends State<SeniorEaseApp> {
           value: _accessibilityController,
         ),
         ChangeNotifierProvider<TasksController>.value(value: _tasksController),
+        ChangeNotifierProvider<ProfileController>.value(
+          value: _profileController,
+        ),
       ],
       child: Consumer<AccessibilityPreferencesController>(
         builder: (context, accessibility, _) {

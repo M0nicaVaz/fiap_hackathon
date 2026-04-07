@@ -7,6 +7,7 @@ import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/check_session_use_case.dart';
 import '../../domain/usecases/enter_use_case.dart';
 import '../../domain/usecases/enter_with_google_use_case.dart';
+import '../../domain/usecases/register_use_case.dart';
 import '../../domain/usecases/sign_out_use_case.dart';
 
 enum AuthSessionStatus { unknown, unauthenticated, authenticated }
@@ -20,6 +21,8 @@ abstract interface class AuthSessionStateProvider implements Listenable {
 
   Future<void> enter({required String email, required String password});
 
+  Future<void> register({required String email, required String password});
+
   Future<void> enterWithGoogle();
 
   Future<void> signOut();
@@ -31,11 +34,13 @@ class AuthSessionController extends ChangeNotifier
     required CheckSessionUseCase checkSessionUseCase,
     required EnterUseCase enterUseCase,
     required EnterWithGoogleUseCase enterWithGoogleUseCase,
+    required RegisterUseCase registerUseCase,
     required SignOutUseCase signOutUseCase,
     required AuthRepository authRepository,
   })  : _checkSessionUseCase = checkSessionUseCase,
         _enterUseCase = enterUseCase,
         _enterWithGoogleUseCase = enterWithGoogleUseCase,
+        _registerUseCase = registerUseCase,
         _signOutUseCase = signOutUseCase,
         _authRepository = authRepository {
     _init();
@@ -44,6 +49,7 @@ class AuthSessionController extends ChangeNotifier
   final CheckSessionUseCase _checkSessionUseCase;
   final EnterUseCase _enterUseCase;
   final EnterWithGoogleUseCase _enterWithGoogleUseCase;
+  final RegisterUseCase _registerUseCase;
   final SignOutUseCase _signOutUseCase;
   final AuthRepository _authRepository;
 
@@ -89,6 +95,18 @@ class AuthSessionController extends ChangeNotifier
     _errorMessage = null;
     try {
       await _enterUseCase(email: email, password: password);
+      _status = AuthSessionStatus.authenticated;
+    } catch (e) {
+      _errorMessage = _friendlyError(e);
+    }
+    notifyListeners();
+  }
+
+  @override
+  Future<void> register({required String email, required String password}) async {
+    _errorMessage = null;
+    try {
+      await _registerUseCase(email: email, password: password);
       _status = AuthSessionStatus.authenticated;
     } catch (e) {
       _errorMessage = _friendlyError(e);

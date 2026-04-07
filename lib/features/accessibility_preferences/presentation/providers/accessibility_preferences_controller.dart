@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../../../../features/auth/domain/repositories/auth_repository.dart';
+import '../../../../features/profile/domain/usecases/sync_accessibility_to_supabase_use_case.dart';
 import '../../domain/entities/accessibility_settings.dart';
 import '../../domain/usecases/load_accessibility_settings_use_case.dart';
 import '../../domain/usecases/save_accessibility_settings_use_case.dart';
@@ -11,10 +13,16 @@ class AccessibilityPreferencesController extends ChangeNotifier {
   AccessibilityPreferencesController({
     required LoadAccessibilitySettingsUseCase loadSettingsUseCase,
     required SaveAccessibilitySettingsUseCase saveSettingsUseCase,
-  }) : _saveSettingsUseCase = saveSettingsUseCase,
-       _settings = loadSettingsUseCase();
+    SyncAccessibilityToSupabaseUseCase? syncToSupabaseUseCase,
+    AuthRepository? authRepository,
+  })  : _saveSettingsUseCase = saveSettingsUseCase,
+        _syncToSupabaseUseCase = syncToSupabaseUseCase,
+        _authRepository = authRepository,
+        _settings = loadSettingsUseCase();
 
   final SaveAccessibilitySettingsUseCase _saveSettingsUseCase;
+  final SyncAccessibilityToSupabaseUseCase? _syncToSupabaseUseCase;
+  final AuthRepository? _authRepository;
 
   AccessibilitySettings _settings;
 
@@ -63,5 +71,9 @@ class AccessibilityPreferencesController extends ChangeNotifier {
     _settings = settings;
     notifyListeners();
     unawaited(_saveSettingsUseCase(settings));
+    final uid = _authRepository?.currentUser?.uid;
+    if (uid != null && _syncToSupabaseUseCase != null) {
+      unawaited(_syncToSupabaseUseCase(uid, settings));
+    }
   }
 }

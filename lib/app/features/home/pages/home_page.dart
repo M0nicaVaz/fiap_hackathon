@@ -4,6 +4,7 @@ import 'package:fiap_hackathon/features/activities/domain/entities/task.dart';
 import 'package:fiap_hackathon/features/activities/presentation/providers/tasks_controller.dart';
 import 'package:fiap_hackathon/features/accessibility_preferences/presentation/providers/accessibility_preferences_controller.dart';
 import 'package:fiap_hackathon/features/activities/presentation/pages/task_editor_page.dart';
+import 'package:fiap_hackathon/features/profile/presentation/providers/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -139,12 +140,13 @@ class _HomePageState extends State<HomePage> {
     final greeting = hour < 12
         ? 'Bom dia'
         : (hour < 18 ? 'Boa tarde' : 'Boa noite');
+    final name = context.watch<ProfileController>().profile?.displayName;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '$greeting,\nArthur!',
+          name != null ? '$greeting,\n$name!' : '$greeting!',
           style: ds.typography.headingLarge.copyWith(
             fontWeight: FontWeight.w900,
             fontSize: 32 * ds.scale.fontScale,

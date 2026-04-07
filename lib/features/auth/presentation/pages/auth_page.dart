@@ -18,6 +18,7 @@ class _AuthPageState extends State<AuthPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _loading = false;
+  bool _isRegistering = false;
 
   @override
   void dispose() {
@@ -26,12 +27,20 @@ class _AuthPageState extends State<AuthPage> {
     super.dispose();
   }
 
-  Future<void> _enter() async {
+  Future<void> _submit() async {
     setState(() => _loading = true);
-    await context.read<AuthSessionStateProvider>().enter(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        );
+    final provider = context.read<AuthSessionStateProvider>();
+    if (_isRegistering) {
+      await provider.register(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+    } else {
+      await provider.enter(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+    }
     if (!mounted) return;
     setState(() => _loading = false);
     final error = context.read<AuthSessionStateProvider>().errorMessage;
@@ -108,15 +117,26 @@ class _AuthPageState extends State<AuthPage> {
                   ],
                 ),
                 DSButton(
-                  label: 'Entrar',
+                  label: _isRegistering ? 'Criar conta' : 'Entrar',
                   variant: DSButtonVariant.primary,
-                  onPressed: _loading ? null : _enter,
+                  onPressed: _loading ? null : _submit,
+                  fullWidth: true,
+                ),
+                const SizedBox(height: 16),
+                DSButton(
+                  label: _isRegistering
+                      ? 'Já tenho uma conta'
+                      : 'Criar conta',
+                  variant: DSButtonVariant.secondary,
+                  onPressed: _loading
+                      ? null
+                      : () => setState(() => _isRegistering = !_isRegistering),
                   fullWidth: true,
                 ),
                 const SizedBox(height: 16),
                 DSButton(
                   label: 'Entrar com Google',
-                  variant: DSButtonVariant.secondary,
+                  variant: DSButtonVariant.ghost,
                   onPressed: _loading ? null : _enterWithGoogle,
                   fullWidth: true,
                 ),

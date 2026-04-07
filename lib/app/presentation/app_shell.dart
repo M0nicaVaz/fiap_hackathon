@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:fiap_hackathon/core/design_system/widgets/ds_button/ds_button.dart';
 
+import '../../app/navigation/app_routes.dart';
 import '../../features/auth/presentation/providers/auth_session_controller.dart';
 
 class AppShell extends StatelessWidget {
@@ -78,6 +79,11 @@ class AppShell extends StatelessWidget {
                 ((ds.scale.fontScale - 1.0) * 40).clamp(0.0, 60.0),
             title: Text(currentTitle),
             actions: [
+              DSIconButton(
+                size: DSIconSize.lg,
+                icon: Icons.person_outline,
+                onPressed: () => context.push(AppRoutes.profile),
+              ),
               DSIconButton(
                 size: DSIconSize.lg,
                 icon: Icons.logout,

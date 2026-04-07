@@ -7,6 +7,7 @@ import '../../features/activities/presentation/pages/activities_page.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/providers/auth_session_controller.dart';
+import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../app/features/home/pages/home_page.dart';
 import '../../app/presentation/app_shell.dart';
 import 'app_routes.dart';
@@ -58,6 +59,12 @@ class AppRouter {
         name: AppRouteNames.auth,
         pageBuilder: (context, state) =>
             customPage<void>(key: state.pageKey, child: const AuthPage()),
+      ),
+      GoRoute(
+        path: AppRoutes.profile,
+        name: AppRouteNames.profile,
+        pageBuilder: (context, state) =>
+            customPage<void>(key: state.pageKey, child: const ProfilePage()),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

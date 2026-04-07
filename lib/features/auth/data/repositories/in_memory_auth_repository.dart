@@ -21,6 +21,11 @@ class InMemoryAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> register({required String email, required String password}) async {
+    _isSignedIn = true;
+  }
+
+  @override
   Future<void> enterWithGoogle() async {
     _isSignedIn = true;
   }
