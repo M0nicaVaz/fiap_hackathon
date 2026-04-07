@@ -31,11 +31,16 @@ class SupabaseAuthRepository implements AuthRepository {
     await _client.auth.signUp(email: email, password: password);
   }
 
+  static const _redirectUrl = String.fromEnvironment(
+    'OAUTH_REDIRECT',
+    defaultValue: 'https://fiap-hackathon-six.vercel.app',
+  );
+
   @override
   Future<void> enterWithGoogle() async {
     await _client.auth.signInWithOAuth(
       OAuthProvider.google,
-      redirectTo: 'https://vmyacifgkzsefkitjzuk.supabase.co/auth/v1/callback',
+      redirectTo: _redirectUrl,
     );
   }
 
