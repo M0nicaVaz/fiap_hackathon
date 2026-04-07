@@ -122,11 +122,16 @@ class AppRouter {
         return isAtSplash ? null : AppRoutes.splash;
       case AuthSessionStatus.unauthenticated:
         if (!isAtAuth) {
-          return AppRoutes.auth;
+          final from = Uri.encodeComponent(state.uri.toString());
+          return '${AppRoutes.auth}?from=$from';
         }
         return null;
       case AuthSessionStatus.authenticated:
         if (isAtSplash || isAtAuth || location == AppRoutes.root) {
+          final from = state.uri.queryParameters['from'];
+          if (from != null && from.isNotEmpty) {
+            return Uri.decodeComponent(from);
+          }
           return AppRoutes.home;
         }
         return null;
