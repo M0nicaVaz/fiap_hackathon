@@ -1,10 +1,8 @@
 import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
 import 'package:fiap_hackathon/core/design_system/widgets/ds_button/ds_button.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../app/navigation/app_routes.dart';
 import '../providers/auth_session_controller.dart';
 
 class AuthPage extends StatefulWidget {
@@ -19,6 +17,7 @@ class _AuthPageState extends State<AuthPage> {
   final _passwordController = TextEditingController();
   bool _loading = false;
   bool _isRegistering = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -28,7 +27,7 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   Future<void> _submit() async {
-    setState(() => _loading = true);
+    setState(() { _loading = true; _errorMessage = null; });
     final provider = context.read<AuthSessionStateProvider>();
     if (_isRegistering) {
       await provider.register(
@@ -42,26 +41,20 @@ class _AuthPageState extends State<AuthPage> {
       );
     }
     if (!mounted) return;
-    setState(() => _loading = false);
-    final error = context.read<AuthSessionStateProvider>().errorMessage;
-    if (error != null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(error)));
-      return;
-    }
-    context.go(AppRoutes.home);
+    setState(() {
+      _loading = false;
+      _errorMessage = context.read<AuthSessionStateProvider>().errorMessage;
+    });
   }
 
   Future<void> _enterWithGoogle() async {
-    setState(() => _loading = true);
+    setState(() { _loading = true; _errorMessage = null; });
     await context.read<AuthSessionStateProvider>().enterWithGoogle();
     if (!mounted) return;
-    setState(() => _loading = false);
-    final error = context.read<AuthSessionStateProvider>().errorMessage;
-    if (error != null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(error)));
-    }
+    setState(() {
+      _loading = false;
+      _errorMessage = context.read<AuthSessionStateProvider>().errorMessage;
+    });
   }
 
   @override
@@ -113,6 +106,14 @@ class _AuthPageState extends State<AuthPage> {
                         label: Text('Insira sua senha'),
                       ),
                     ),
+                    if (_errorMessage != null) ...[
+                      SizedBox(height: ds.spacing.sm),
+                      Text(
+                        _errorMessage!,
+                        style: ds.typography.bodyMedium.copyWith(color: ds.colors.feedbackDanger),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                     SizedBox(height: ds.spacing.xxl),
                   ],
                 ),

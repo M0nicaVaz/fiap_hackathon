@@ -95,7 +95,6 @@ class AuthSessionController extends ChangeNotifier
     _errorMessage = null;
     try {
       await _enterUseCase(email: email, password: password);
-      _status = AuthSessionStatus.authenticated;
     } catch (e) {
       _errorMessage = _friendlyError(e);
     }
@@ -107,7 +106,6 @@ class AuthSessionController extends ChangeNotifier
     _errorMessage = null;
     try {
       await _registerUseCase(email: email, password: password);
-      _status = AuthSessionStatus.authenticated;
     } catch (e) {
       _errorMessage = _friendlyError(e);
     }
@@ -134,10 +132,22 @@ class AuthSessionController extends ChangeNotifier
 
   String _friendlyError(Object e) {
     final msg = e.toString().toLowerCase();
-    if (msg.contains('invalid') || msg.contains('credentials')) {
+    if (msg.contains('invalid login') || msg.contains('invalid credentials') || msg.contains('wrong password')) {
       return 'E-mail ou senha inválidos.';
     }
-    if (msg.contains('network') || msg.contains('connection')) {
+    if (msg.contains('email not confirmed')) {
+      return 'Confirme seu e-mail antes de entrar.';
+    }
+    if (msg.contains('already registered') || msg.contains('already exists') || msg.contains('422')) {
+      return 'Este e-mail já está cadastrado.';
+    }
+    if (msg.contains('weak password') || msg.contains('password should be')) {
+      return 'Senha muito fraca. Use ao menos 6 caracteres.';
+    }
+    if (msg.contains('invalid email') || msg.contains('unable to validate email')) {
+      return 'E-mail inválido.';
+    }
+    if (msg.contains('network') || msg.contains('connection') || msg.contains('socket')) {
       return 'Sem conexão. Verifique sua internet.';
     }
     return 'Ocorreu um erro. Tente novamente.';
