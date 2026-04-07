@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,24 +16,18 @@ Page<T> customPage<T>({
   required Widget child,
   bool fullscreenDialog = false,
 }) {
-  if (kIsWeb) {
-    return NoTransitionPage<T>(key: key, child: child);
-  }
-
-  switch (defaultTargetPlatform) {
-    case TargetPlatform.iOS:
-    case TargetPlatform.android:
-      return MaterialPage<T>(
-        key: key,
+  return CustomTransitionPage<T>(
+    key: key,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 220),
+    reverseTransitionDuration: const Duration(milliseconds: 180),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
         child: child,
-        fullscreenDialog: fullscreenDialog,
       );
-    case TargetPlatform.macOS:
-    case TargetPlatform.windows:
-    case TargetPlatform.linux:
-    case TargetPlatform.fuchsia:
-      return NoTransitionPage<T>(key: key, child: child);
-  }
+    },
+  );
 }
 
 class AppRouter {
