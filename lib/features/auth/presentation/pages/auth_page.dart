@@ -7,8 +7,53 @@ import 'package:provider/provider.dart';
 import '../../../../app/navigation/app_routes.dart';
 import '../providers/auth_session_controller.dart';
 
-class AuthPage extends StatelessWidget {
+class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
+
+  @override
+  State<AuthPage> createState() => _AuthPageState();
+}
+
+class _AuthPageState extends State<AuthPage> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _enter() async {
+    setState(() => _loading = true);
+    await context.read<AuthSessionStateProvider>().enter(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
+    if (!mounted) return;
+    setState(() => _loading = false);
+    final error = context.read<AuthSessionStateProvider>().errorMessage;
+    if (error != null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+    context.go(AppRoutes.home);
+  }
+
+  Future<void> _enterWithGoogle() async {
+    setState(() => _loading = true);
+    await context.read<AuthSessionStateProvider>().enterWithGoogle();
+    if (!mounted) return;
+    setState(() => _loading = false);
+    final error = context.read<AuthSessionStateProvider>().errorMessage;
+    if (error != null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error)));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,49 +87,37 @@ class AuthPage extends StatelessWidget {
                 SizedBox(height: ds.spacing.sm),
                 Text('Sua vida organizada de forma simples e acessível.'),
                 SizedBox(height: ds.spacing.xl),
-                Form(
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        decoration: InputDecoration(
-                          label: Text("Insira seu e-mail"),
-                        ),
+                Column(
+                  children: [
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        label: Text('Insira seu e-mail'),
                       ),
-                      SizedBox(height: ds.spacing.md),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          label: Text("Insira sua senha"),
-                        ),
+                    ),
+                    SizedBox(height: ds.spacing.md),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        label: Text('Insira sua senha'),
                       ),
-                      SizedBox(height: ds.spacing.xxl),
-                    ],
-                  ),
+                    ),
+                    SizedBox(height: ds.spacing.xxl),
+                  ],
                 ),
                 DSButton(
-                  label: "Entrar",
+                  label: 'Entrar',
                   variant: DSButtonVariant.primary,
-                  onPressed: () async {
-                    await context
-                        .read<AuthSessionStateProvider>()
-                        .enter(email: '', password: '');
-                    if (context.mounted) {
-                      context.go(AppRoutes.home);
-                    }
-                  },
+                  onPressed: _loading ? null : _enter,
                   fullWidth: true,
                 ),
                 const SizedBox(height: 16),
                 DSButton(
-                  label: "Criar conta",
+                  label: 'Entrar com Google',
                   variant: DSButtonVariant.secondary,
-                  onPressed: () async {
-                    await context
-                        .read<AuthSessionStateProvider>()
-                        .enter(email: '', password: '');
-                    if (context.mounted) {
-                      context.go(AppRoutes.home);
-                    }
-                  },
+                  onPressed: _loading ? null : _enterWithGoogle,
                   fullWidth: true,
                 ),
               ],

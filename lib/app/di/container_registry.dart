@@ -20,12 +20,19 @@ import '../../features/activities/domain/usecases/save_task_progress_use_case.da
 import '../../features/activities/domain/usecases/update_task_use_case.dart';
 import '../../features/activities/domain/usecases/watch_tasks_use_case.dart';
 import '../../features/activities/presentation/providers/tasks_controller.dart';
-import '../../features/auth/data/repositories/in_memory_auth_repository.dart';
+import '../../features/auth/data/repositories/supabase_auth_repository.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/usecases/check_session_use_case.dart';
 import '../../features/auth/domain/usecases/enter_use_case.dart';
+import '../../features/auth/domain/usecases/enter_with_google_use_case.dart';
 import '../../features/auth/domain/usecases/sign_out_use_case.dart';
 import '../../features/auth/presentation/providers/auth_session_controller.dart';
+import '../../features/profile/data/repositories/supabase_profile_repository.dart';
+import '../../features/profile/domain/repositories/profile_repository.dart';
+import '../../features/profile/domain/usecases/get_profile_use_case.dart';
+import '../../features/profile/domain/usecases/load_accessibility_from_supabase_use_case.dart';
+import '../../features/profile/domain/usecases/save_profile_use_case.dart';
+import '../../features/profile/domain/usecases/sync_accessibility_to_supabase_use_case.dart';
 
 abstract final class ContainerRegistry {
   static final GetIt _getIt = GetIt.instance;
@@ -57,15 +64,29 @@ abstract final class ContainerRegistry {
 
   static void _registerFeatures() {
     _getIt
-      ..registerLazySingleton<AuthRepository>(InMemoryAuthRepository.new)
+      ..registerLazySingleton<AuthRepository>(
+        () => SupabaseAuthRepository(_getIt()),
+      )
+      ..registerLazySingleton<ProfileRepository>(
+        () => SupabaseProfileRepository(_getIt()),
+      )
       ..registerLazySingleton(() => CheckSessionUseCase(_getIt()))
       ..registerLazySingleton(() => EnterUseCase(_getIt()))
+      ..registerLazySingleton(() => EnterWithGoogleUseCase(_getIt()))
       ..registerLazySingleton(() => SignOutUseCase(_getIt()))
+      ..registerLazySingleton(() => GetProfileUseCase(_getIt()))
+      ..registerLazySingleton(() => SaveProfileUseCase(_getIt()))
+      ..registerLazySingleton(() => SyncAccessibilityToSupabaseUseCase(_getIt()))
+      ..registerLazySingleton(
+        () => LoadAccessibilityFromSupabaseUseCase(_getIt()),
+      )
       ..registerLazySingleton(
         () => AuthSessionController(
           checkSessionUseCase: _getIt(),
           enterUseCase: _getIt(),
+          enterWithGoogleUseCase: _getIt(),
           signOutUseCase: _getIt(),
+          authRepository: _getIt(),
         ),
       )
       ..registerLazySingleton(

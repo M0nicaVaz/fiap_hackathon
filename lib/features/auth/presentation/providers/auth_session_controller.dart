@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../../domain/entities/user_profile.dart';
+import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/check_session_use_case.dart';
 import '../../domain/usecases/enter_use_case.dart';
+import '../../domain/usecases/enter_with_google_use_case.dart';
 import '../../domain/usecases/sign_out_use_case.dart';
 
 enum AuthSessionStatus { unknown, unauthenticated, authenticated }
@@ -13,7 +16,11 @@ abstract interface class AuthSessionStateProvider implements Listenable {
 
   String? get errorMessage;
 
+  UserProfile? get currentUser;
+
   Future<void> enter({required String email, required String password});
+
+  Future<void> enterWithGoogle();
 
   Future<void> signOut();
 }
@@ -23,44 +30,81 @@ class AuthSessionController extends ChangeNotifier
   AuthSessionController({
     required CheckSessionUseCase checkSessionUseCase,
     required EnterUseCase enterUseCase,
+    required EnterWithGoogleUseCase enterWithGoogleUseCase,
     required SignOutUseCase signOutUseCase,
-  }) : _checkSessionUseCase = checkSessionUseCase,
-       _enterUseCase = enterUseCase,
-       _signOutUseCase = signOutUseCase {
-    _bootstrapTimer = Timer(const Duration(milliseconds: 400), _bootstrap);
+    required AuthRepository authRepository,
+  })  : _checkSessionUseCase = checkSessionUseCase,
+        _enterUseCase = enterUseCase,
+        _enterWithGoogleUseCase = enterWithGoogleUseCase,
+        _signOutUseCase = signOutUseCase,
+        _authRepository = authRepository {
+    _init();
   }
 
   final CheckSessionUseCase _checkSessionUseCase;
   final EnterUseCase _enterUseCase;
+  final EnterWithGoogleUseCase _enterWithGoogleUseCase;
   final SignOutUseCase _signOutUseCase;
+  final AuthRepository _authRepository;
 
-  Timer? _bootstrapTimer;
+  StreamSubscription<UserProfile?>? _authSub;
   AuthSessionStatus _status = AuthSessionStatus.unknown;
+  String? _errorMessage;
 
   @override
   AuthSessionStatus get status => _status;
 
   @override
-  String? get errorMessage => null;
+  String? get errorMessage => _errorMessage;
 
-  void _bootstrap() {
+  @override
+  UserProfile? get currentUser => _authRepository.currentUser;
+
+  void _init() {
     const autoLogin = bool.fromEnvironment('DEBUG_AUTO_LOGIN');
     if (autoLogin) {
       _status = AuthSessionStatus.authenticated;
       notifyListeners();
       return;
     }
+
     _status = _checkSessionUseCase()
         ? AuthSessionStatus.authenticated
         : AuthSessionStatus.unauthenticated;
     notifyListeners();
+
+    _authSub = _authRepository.authStateChanges.listen((user) {
+      final next = user != null
+          ? AuthSessionStatus.authenticated
+          : AuthSessionStatus.unauthenticated;
+      if (_status != next) {
+        _status = next;
+        notifyListeners();
+      }
+    });
   }
 
   @override
   Future<void> enter({required String email, required String password}) async {
-    await _enterUseCase(email: email, password: password);
-    _status = AuthSessionStatus.authenticated;
+    _errorMessage = null;
+    try {
+      await _enterUseCase(email: email, password: password);
+      _status = AuthSessionStatus.authenticated;
+    } catch (e) {
+      _errorMessage = _friendlyError(e);
+    }
     notifyListeners();
+  }
+
+  @override
+  Future<void> enterWithGoogle() async {
+    _errorMessage = null;
+    try {
+      await _enterWithGoogleUseCase();
+    } catch (e) {
+      _errorMessage = _friendlyError(e);
+      notifyListeners();
+    }
   }
 
   @override
@@ -70,9 +114,20 @@ class AuthSessionController extends ChangeNotifier
     notifyListeners();
   }
 
+  String _friendlyError(Object e) {
+    final msg = e.toString().toLowerCase();
+    if (msg.contains('invalid') || msg.contains('credentials')) {
+      return 'E-mail ou senha inválidos.';
+    }
+    if (msg.contains('network') || msg.contains('connection')) {
+      return 'Sem conexão. Verifique sua internet.';
+    }
+    return 'Ocorreu um erro. Tente novamente.';
+  }
+
   @override
   void dispose() {
-    _bootstrapTimer?.cancel();
+    _authSub?.cancel();
     super.dispose();
   }
 }
