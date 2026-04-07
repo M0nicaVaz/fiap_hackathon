@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../../../features/auth/domain/repositories/auth_repository.dart';
+import '../../../../features/profile/domain/usecases/load_accessibility_from_supabase_use_case.dart';
 import '../../../../features/profile/domain/usecases/sync_accessibility_to_supabase_use_case.dart';
 import '../../domain/entities/accessibility_settings.dart';
 import '../../domain/usecases/load_accessibility_settings_use_case.dart';
@@ -14,15 +15,21 @@ class AccessibilityPreferencesController extends ChangeNotifier {
     required LoadAccessibilitySettingsUseCase loadSettingsUseCase,
     required SaveAccessibilitySettingsUseCase saveSettingsUseCase,
     SyncAccessibilityToSupabaseUseCase? syncToSupabaseUseCase,
+    LoadAccessibilityFromSupabaseUseCase? loadFromSupabaseUseCase,
     AuthRepository? authRepository,
   })  : _saveSettingsUseCase = saveSettingsUseCase,
         _syncToSupabaseUseCase = syncToSupabaseUseCase,
+        _loadFromSupabaseUseCase = loadFromSupabaseUseCase,
         _authRepository = authRepository,
-        _settings = loadSettingsUseCase();
+        _settings = loadSettingsUseCase() {
+    _listenToAuth();
+  }
 
   final SaveAccessibilitySettingsUseCase _saveSettingsUseCase;
   final SyncAccessibilityToSupabaseUseCase? _syncToSupabaseUseCase;
+  final LoadAccessibilityFromSupabaseUseCase? _loadFromSupabaseUseCase;
   final AuthRepository? _authRepository;
+  StreamSubscription<dynamic>? _authSub;
 
   AccessibilitySettings _settings;
 
@@ -65,6 +72,33 @@ class AccessibilityPreferencesController extends ChangeNotifier {
 
   void reset() {
     _apply(AccessibilitySettings.defaults());
+  }
+
+  void _listenToAuth() {
+    final repo = _authRepository;
+    if (repo == null) return;
+    _authSub = repo.authStateChanges.listen((user) {
+      if (user != null) _loadFromSupabase(user.uid);
+    });
+  }
+
+  Future<void> _loadFromSupabase(String uid) async {
+    final useCase = _loadFromSupabaseUseCase;
+    if (useCase == null) return;
+    try {
+      final remote = await useCase(uid);
+      if (remote != null) {
+        _settings = remote;
+        notifyListeners();
+        unawaited(_saveSettingsUseCase(remote));
+      }
+    } catch (_) {}
+  }
+
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    super.dispose();
   }
 
   void _apply(AccessibilitySettings settings) {

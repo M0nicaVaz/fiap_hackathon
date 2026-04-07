@@ -113,6 +113,7 @@ abstract final class ContainerRegistry {
           loadSettingsUseCase: _getIt(),
           saveSettingsUseCase: _getIt(),
           syncToSupabaseUseCase: _getIt(),
+          loadFromSupabaseUseCase: _getIt(),
           authRepository: _getIt(),
         ),
       )
