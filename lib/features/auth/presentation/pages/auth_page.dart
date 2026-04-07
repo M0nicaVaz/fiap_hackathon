@@ -15,6 +15,7 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _passwordFocus = FocusNode();
   bool _loading = false;
   bool _isRegistering = false;
   String? _errorMessage;
@@ -23,6 +24,7 @@ class _AuthPageState extends State<AuthPage> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _passwordFocus.dispose();
     super.dispose();
   }
 
@@ -94,6 +96,8 @@ class _AuthPageState extends State<AuthPage> {
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
                       decoration: const InputDecoration(
                         label: Text('Insira seu e-mail'),
                       ),
@@ -101,7 +105,10 @@ class _AuthPageState extends State<AuthPage> {
                     SizedBox(height: ds.spacing.md),
                     TextFormField(
                       controller: _passwordController,
+                      focusNode: _passwordFocus,
                       obscureText: true,
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (_) { if (!_loading) _submit(); },
                       decoration: const InputDecoration(
                         label: Text('Insira sua senha'),
                       ),
