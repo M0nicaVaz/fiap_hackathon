@@ -52,14 +52,17 @@ class _ProfilePageState extends State<ProfilePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Center(
-              child: CircleAvatar(
-                radius: 48,
-                backgroundImage: profile?.photoUrl != null
-                    ? NetworkImage(profile!.photoUrl!)
-                    : null,
-                child: profile?.photoUrl == null
-                    ? Icon(Icons.person, size: 48, color: ds.colors.primary)
-                    : null,
+              child: Semantics(
+                label: 'Foto de perfil',
+                child: CircleAvatar(
+                  radius: 48,
+                  backgroundImage: profile?.photoUrl != null
+                      ? NetworkImage(profile!.photoUrl!)
+                      : null,
+                  child: profile?.photoUrl == null
+                      ? Icon(Icons.person, size: 48, color: ds.colors.primary)
+                      : null,
+                ),
               ),
             ),
             SizedBox(height: ds.spacing.xl),
@@ -68,10 +71,14 @@ class _ProfilePageState extends State<ProfilePage> {
               decoration: const InputDecoration(label: Text('Nome')),
             ),
             SizedBox(height: ds.spacing.md),
-            TextFormField(
-              initialValue: profile?.email ?? '',
+            Semantics(
+              label: 'E-mail: ${profile?.email ?? ''}',
               readOnly: true,
-              decoration: const InputDecoration(label: Text('E-mail')),
+              child: TextFormField(
+                initialValue: profile?.email ?? '',
+                readOnly: true,
+                decoration: const InputDecoration(label: Text('E-mail')),
+              ),
             ),
             SizedBox(height: ds.spacing.xxl),
             DSButton(

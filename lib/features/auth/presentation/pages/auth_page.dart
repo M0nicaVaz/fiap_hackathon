@@ -73,13 +73,15 @@ class _AuthPageState extends State<AuthPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(height: ds.spacing.lg),
-                Image.asset(
-                  'assets/images/landing.png',
-                  height: 300,
-                  width: 300,
-                  fit: BoxFit.contain,
-                  cacheHeight: 300,
-                  cacheWidth: 300,
+                ExcludeSemantics(
+                  child: Image.asset(
+                    'assets/images/landing.png',
+                    height: 300,
+                    width: 300,
+                    fit: BoxFit.contain,
+                    cacheHeight: 300,
+                    cacheWidth: 300,
+                  ),
                 ),
                 SizedBox(height: ds.spacing.lg),
                 Text(

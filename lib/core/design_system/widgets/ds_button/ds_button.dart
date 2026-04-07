@@ -117,10 +117,13 @@ class DSButton extends StatelessWidget {
 
   Widget _buildLabel() {
     if (loading) {
-      return const SizedBox(
-        height: 18,
-        width: 18,
-        child: CircularProgressIndicator(strokeWidth: 2),
+      return Semantics(
+        label: 'Carregando',
+        child: const SizedBox(
+          height: 18,
+          width: 18,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
       );
     }
 

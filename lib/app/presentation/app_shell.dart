@@ -82,11 +82,13 @@ class AppShell extends StatelessWidget {
               DSIconButton(
                 size: DSIconSize.lg,
                 icon: Icons.person_outline,
+                tooltip: 'Meu perfil',
                 onPressed: () => context.push(AppRoutes.profile),
               ),
               DSIconButton(
                 size: DSIconSize.lg,
                 icon: Icons.logout,
+                tooltip: 'Sair da conta',
                 onPressed: () {
                   context.read<AuthSessionStateProvider>().signOut();
                 },
