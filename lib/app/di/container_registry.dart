@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/accessibility_preferences/data/datasources/shared_preferences_accessibility_preferences_data_source.dart';
 import '../../features/accessibility_preferences/data/repositories/shared_preferences_accessibility_preferences_repository.dart';
@@ -53,10 +52,7 @@ abstract final class ContainerRegistry {
   static void _registerCore(SharedPreferences preferences) {
     _getIt
       ..registerLazySingleton<SharedPreferences>(() => preferences)
-      ..registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance)
-      ..registerLazySingleton<FirebaseFirestore>(
-        () => FirebaseFirestore.instance,
-      );
+      ..registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
   }
 
   static void _registerFeatures() {

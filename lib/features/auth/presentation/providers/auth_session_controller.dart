@@ -13,7 +13,7 @@ abstract interface class AuthSessionStateProvider implements Listenable {
 
   String? get errorMessage;
 
-  Future<void> enter();
+  Future<void> enter({required String email, required String password});
 
   Future<void> signOut();
 }
@@ -57,8 +57,8 @@ class AuthSessionController extends ChangeNotifier
   }
 
   @override
-  Future<void> enter() async {
-    await _enterUseCase();
+  Future<void> enter({required String email, required String password}) async {
+    await _enterUseCase(email: email, password: password);
     _status = AuthSessionStatus.authenticated;
     notifyListeners();
   }

@@ -64,7 +64,9 @@ class AuthPage extends StatelessWidget {
                   label: "Entrar",
                   variant: DSButtonVariant.primary,
                   onPressed: () async {
-                    await context.read<AuthSessionStateProvider>().enter();
+                    await context
+                        .read<AuthSessionStateProvider>()
+                        .enter(email: '', password: '');
                     if (context.mounted) {
                       context.go(AppRoutes.home);
                     }
@@ -76,7 +78,9 @@ class AuthPage extends StatelessWidget {
                   label: "Criar conta",
                   variant: DSButtonVariant.secondary,
                   onPressed: () async {
-                    await context.read<AuthSessionStateProvider>().enter();
+                    await context
+                        .read<AuthSessionStateProvider>()
+                        .enter(email: '', password: '');
                     if (context.mounted) {
                       context.go(AppRoutes.home);
                     }

@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'failure.dart';
 
@@ -8,15 +8,15 @@ abstract final class FailureMapper {
       return error;
     }
 
-    if (error is FirebaseAuthException) {
+    if (error is AuthException) {
       return AuthFailure(message: error.message, cause: error);
     }
 
-    if (error is FirebaseException) {
+    if (error is PostgrestException) {
       switch (error.code) {
-        case 'permission-denied':
+        case '42501':
           return PermissionFailure(message: error.message, cause: error);
-        case 'not-found':
+        case 'PGRST116':
           return NotFoundFailure(message: error.message, cause: error);
         default:
           return UnknownFailure(message: error.message, cause: error);

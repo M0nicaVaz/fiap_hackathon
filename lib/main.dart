@@ -3,9 +3,9 @@ import 'package:fiap_hackathon/core/design_system/builder/design_system_builder.
 import 'package:fiap_hackathon/core/design_system/builder/theme_builder.dart';
 import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
 import 'package:fiap_hackathon/core/design_system/themes/color_themes.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +18,6 @@ import 'app/navigation/app_router.dart';
 import 'features/activities/presentation/providers/tasks_controller.dart';
 import 'features/accessibility_preferences/presentation/providers/accessibility_preferences_controller.dart';
 import 'features/auth/presentation/providers/auth_session_controller.dart';
-import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +25,11 @@ Future<void> main() async {
   if (kIsWeb) {
     usePathUrlStrategy();
   }
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Supabase.initialize(
+    url: 'https://vmyacifgkzsefkitjzuk.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZteWFjaWZna3pzZWZraXRqenVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MjY0NjEsImV4cCI6MjA5MTEwMjQ2MX0.OZXgJVOmfZVwX7PJOr_dptEedE7OuB5SceDJjDSvZc4',
+  );
   final prefs = await SharedPreferences.getInstance();
   await ContainerRegistry.setup(preferences: prefs);
 

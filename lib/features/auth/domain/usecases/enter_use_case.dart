@@ -5,7 +5,7 @@ class EnterUseCase {
 
   final AuthRepository _authRepository;
 
-  Future<void> call() {
-    return _authRepository.enter();
+  Future<void> call({required String email, required String password}) {
+    return _authRepository.enter(email: email, password: password);
   }
 }
