@@ -92,6 +92,7 @@ class _SeniorEaseAppState extends State<SeniorEaseApp> {
           return DesignSystemProvider(
             ds: ds,
             child: MaterialApp.router(
+              debugShowCheckedModeBanner: false,
               title: 'SeniorEase',
               theme: buildTheme(ds),
               routerConfig: _router,
