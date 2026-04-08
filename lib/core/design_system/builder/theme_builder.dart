@@ -60,5 +60,26 @@ ThemeData buildTheme(AppDesignSystem ds) {
     cardTheme: CardThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: ds.colors.surface,
+      contentTextStyle: ds.typography.bodyMedium.copyWith(
+        color: ds.colors.textPrimary,
+      ),
+      actionTextColor: ds.colors.primary,
+      disabledActionTextColor: ds.colors.textDisabled,
+      closeIconColor: ds.colors.textSecondary,
+      elevation: 6,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: ds.colors.disabled.withValues(alpha: 0.25),
+        ),
+      ),
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: ds.spacing.lg,
+        vertical: ds.spacing.md,
+      ),
+    ),
   );
 }
