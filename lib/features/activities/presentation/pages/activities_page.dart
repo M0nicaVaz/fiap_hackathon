@@ -26,6 +26,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   Timer? _reminderTimer;
   int _tabIndex = 0;
   final _searchController = TextEditingController();
+  String? _busyTaskId;
 
   @override
   void initState() {
@@ -90,41 +91,71 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   }
 
   Future<void> _confirmDelete(Task task) async {
+    if (_busyTaskId != null) {
+      return;
+    }
     final confirmed = await showDeleteActivityDialog(context);
     if (!confirmed || !mounted) {
       return;
     }
-    await context.read<TasksController>().deleteTask(task.id);
-    if (!mounted) {
-      return;
+    setState(() => _busyTaskId = task.id);
+    try {
+      await context.read<TasksController>().deleteTask(task.id);
+      if (!mounted) {
+        return;
+      }
+      _snack('Atividade removida.');
+    } finally {
+      if (mounted) {
+        setState(() => _busyTaskId = null);
+      }
     }
-    _snack('Atividade removida.');
   }
 
   Future<void> _confirmOpenWizard(Task task) async {
+    if (_busyTaskId != null) {
+      return;
+    }
     final confirmed = await showOpenWizardDialog(context);
     if (!confirmed || !mounted) {
       return;
     }
-    await openTaskWizard(context, task);
+    setState(() => _busyTaskId = task.id);
+    try {
+      await openTaskWizard(context, task);
+    } finally {
+      if (mounted) {
+        setState(() => _busyTaskId = null);
+      }
+    }
   }
 
   Future<void> _completeQuick(Task task) async {
+    if (_busyTaskId != null) {
+      return;
+    }
     final confirmed = await showCompleteActivityDialog(context);
     if (!confirmed || !mounted) {
       return;
     }
 
     final tasksController = context.read<TasksController>();
-    final entry = await tasksController.completeTask(task.id);
-    if (!mounted) {
-      return;
+    setState(() => _busyTaskId = task.id);
+    try {
+      final entry = await tasksController.completeTask(task.id);
+      if (!mounted) {
+        return;
+      }
+      await tasksController.loadHistory();
+      if (!mounted) {
+        return;
+      }
+      _snack(entry.positiveMessage);
+    } finally {
+      if (mounted) {
+        setState(() => _busyTaskId = null);
+      }
     }
-    await tasksController.loadHistory();
-    if (!mounted) {
-      return;
-    }
-    _snack(entry.positiveMessage);
   }
 
   void _snack(String message) {
@@ -177,6 +208,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                     onComplete: _completeQuick,
                     formatReminder: formatTaskReminder,
                     progressText: formatTaskProgress,
+                    busyTaskId: _busyTaskId,
                   )
                 : CompletedTasksSection(
                     entries: history,

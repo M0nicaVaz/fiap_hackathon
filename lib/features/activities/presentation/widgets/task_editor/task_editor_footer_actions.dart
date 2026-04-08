@@ -6,10 +6,12 @@ class TaskEditorFooterActions extends StatelessWidget {
     super.key,
     required this.onCancel,
     required this.onSave,
+    this.isSaving = false,
   });
 
-  final VoidCallback onCancel;
-  final VoidCallback onSave;
+  final VoidCallback? onCancel;
+  final VoidCallback? onSave;
+  final bool isSaving;
 
   @override
   Widget build(BuildContext context) {
@@ -69,9 +71,18 @@ class TaskEditorFooterActions extends StatelessWidget {
                   foregroundColor: ds.colors.primaryInverse,
                   shape: actionShape,
                 ),
-                icon: Icon(Icons.check_circle_outline, size: ds.icons.md),
+                icon: isSaving
+                    ? SizedBox(
+                        width: ds.icons.md,
+                        height: ds.icons.md,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: ds.colors.primaryInverse,
+                        ),
+                      )
+                    : Icon(Icons.check_circle_outline, size: ds.icons.md),
                 label: Text(
-                  'Salvar',
+                  isSaving ? 'Salvando...' : 'Salvar',
                   style: ds.typography.bodyLarge.copyWith(
                     fontWeight: FontWeight.w800,
                     color: ds.colors.primaryInverse,

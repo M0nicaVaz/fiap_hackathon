@@ -33,6 +33,7 @@ class _TaskEditorPageState extends State<TaskEditorPage> {
   DateTime? _reminderDate;
   TimeOfDay? _reminderTime;
   bool _stepsExpanded = false;
+  bool _isSaving = false;
   bool get _isEditing => widget.initialTask != null;
 
   @override
@@ -109,40 +110,48 @@ class _TaskEditorPageState extends State<TaskEditorPage> {
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_isSaving || !_formKey.currentState!.validate()) return;
 
     final title = _titleController.text.trim();
     final description = _descriptionController.text.trim();
     final stepLabels = normalizedTaskStepLabels(_stepControllers);
     final reminder = _combinedReminder;
     final controller = context.read<TasksController>();
+    setState(() => _isSaving = true);
 
-    if (_isEditing) {
-      final original = widget.initialTask!;
-      final updated = original.copyWith(
+    try {
+      if (_isEditing) {
+        final original =
+            controller.taskById(widget.initialTask!.id) ?? widget.initialTask!;
+        final updated = original.copyWith(
+          title: title,
+          description: description.isEmpty ? null : description,
+          steps: buildUpdatedTaskSteps(original, stepLabels),
+          category: _category,
+          reminderAt: reminder,
+        );
+        await controller.updateTask(updated);
+        if (!mounted) return;
+        _snack('Atividade atualizada.');
+        Navigator.of(context).pop();
+        return;
+      }
+
+      await controller.createTask(
         title: title,
         description: description.isEmpty ? null : description,
-        steps: buildUpdatedTaskSteps(original, stepLabels),
-        category: _category,
+        stepLabels: stepLabels,
         reminderAt: reminder,
+        category: _category,
       );
-      await controller.updateTask(updated);
       if (!mounted) return;
-      _snack('Atividade atualizada.');
+      _snack('Atividade criada.');
       Navigator.of(context).pop();
-      return;
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
-
-    await controller.createTask(
-      title: title,
-      description: description.isEmpty ? null : description,
-      stepLabels: stepLabels,
-      reminderAt: reminder,
-      category: _category,
-    );
-    if (!mounted) return;
-    _snack('Atividade criada.');
-    Navigator.of(context).pop();
   }
 
   void _snack(String message) {
@@ -168,7 +177,7 @@ class _TaskEditorPageState extends State<TaskEditorPage> {
           children: [
             TaskEditorHeader(
               title: title,
-              onBack: () => Navigator.of(context).maybePop(),
+              onBack: _isSaving ? null : () => Navigator.of(context).maybePop(),
             ),
             Expanded(
               child: LayoutBuilder(
@@ -232,8 +241,9 @@ class _TaskEditorPageState extends State<TaskEditorPage> {
               ),
             ),
             TaskEditorFooterActions(
-              onCancel: () => Navigator.of(context).maybePop(),
-              onSave: _save,
+              onCancel: _isSaving ? null : () => Navigator.of(context).maybePop(),
+              onSave: _isSaving ? null : _save,
+              isSaving: _isSaving,
             ),
           ],
         ),

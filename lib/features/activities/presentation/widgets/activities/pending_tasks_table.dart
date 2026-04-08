@@ -15,6 +15,7 @@ class PendingTasksTable extends StatelessWidget {
     required this.onComplete,
     required this.formatReminder,
     required this.progressText,
+    this.busyTaskId,
   });
 
   final List<Task> tasks;
@@ -24,6 +25,7 @@ class PendingTasksTable extends StatelessWidget {
   final void Function(Task) onComplete;
   final String Function(DateTime) formatReminder;
   final String Function(Task) progressText;
+  final String? busyTaskId;
 
   @override
   Widget build(BuildContext context) {
@@ -141,6 +143,7 @@ class PendingTasksTable extends StatelessWidget {
                           onWizard: onWizard,
                           onComplete: onComplete,
                           layout: TaskRowActionsLayout.desktop,
+                          isBusy: busyTaskId == task.id,
                         ),
                       ),
                     ],

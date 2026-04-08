@@ -15,6 +15,7 @@ class PendingTasksSection extends StatelessWidget {
     required this.onComplete,
     required this.formatReminder,
     required this.progressText,
+    this.busyTaskId,
   });
 
   final List<Task> tasks;
@@ -25,6 +26,7 @@ class PendingTasksSection extends StatelessWidget {
   final void Function(Task) onComplete;
   final String Function(DateTime) formatReminder;
   final String Function(Task) progressText;
+  final String? busyTaskId;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +53,7 @@ class PendingTasksSection extends StatelessWidget {
         onComplete: onComplete,
         formatReminder: formatReminder,
         progressText: progressText,
+        busyTaskId: busyTaskId,
       );
     }
     return PendingTasksMobileList(
@@ -60,6 +63,7 @@ class PendingTasksSection extends StatelessWidget {
       onWizard: onWizard,
       onComplete: onComplete,
       formatReminder: formatReminder,
+      busyTaskId: busyTaskId,
     );
   }
 }

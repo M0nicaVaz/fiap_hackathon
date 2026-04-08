@@ -14,6 +14,7 @@ class PendingTasksMobileList extends StatelessWidget {
     required this.onWizard,
     required this.onComplete,
     required this.formatReminder,
+    this.busyTaskId,
   });
 
   final List<Task> tasks;
@@ -22,6 +23,7 @@ class PendingTasksMobileList extends StatelessWidget {
   final void Function(Task) onWizard;
   final void Function(Task) onComplete;
   final String Function(DateTime) formatReminder;
+  final String? busyTaskId;
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +59,7 @@ class PendingTasksMobileList extends StatelessWidget {
               onWizard: onWizard,
               onComplete: onComplete,
               layout: TaskRowActionsLayout.mobile,
+              isBusy: busyTaskId == task.id,
             ),
           ],
         );

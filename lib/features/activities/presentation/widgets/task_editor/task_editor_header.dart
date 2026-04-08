@@ -9,7 +9,7 @@ class TaskEditorHeader extends StatelessWidget {
   });
 
   final String title;
-  final VoidCallback onBack;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {

@@ -18,6 +18,7 @@ class TaskRowActions extends StatelessWidget {
     required this.onWizard,
     required this.onComplete,
     required this.layout,
+    this.isBusy = false,
   });
 
   final Task task;
@@ -26,6 +27,7 @@ class TaskRowActions extends StatelessWidget {
   final void Function(Task) onWizard;
   final void Function(Task) onComplete;
   final TaskRowActionsLayout layout;
+  final bool isBusy;
 
   bool get _canOpenWizard => task.steps.isNotEmpty;
   bool get _canComplete =>
@@ -42,6 +44,7 @@ class TaskRowActions extends StatelessWidget {
           onDelete: onDelete,
           onWizard: onWizard,
           onComplete: onComplete,
+          isBusy: isBusy,
         ),
       TaskRowActionsLayout.mobile => _TaskMobileActions(
           task: task,
@@ -51,6 +54,7 @@ class TaskRowActions extends StatelessWidget {
           onDelete: onDelete,
           onWizard: onWizard,
           onComplete: onComplete,
+          isBusy: isBusy,
         ),
     };
   }
@@ -65,6 +69,7 @@ class _TaskDesktopActions extends StatelessWidget {
     required this.onDelete,
     required this.onWizard,
     required this.onComplete,
+    required this.isBusy,
   });
 
   final Task task;
@@ -74,6 +79,7 @@ class _TaskDesktopActions extends StatelessWidget {
   final void Function(Task) onDelete;
   final void Function(Task) onWizard;
   final void Function(Task) onComplete;
+  final bool isBusy;
 
   @override
   Widget build(BuildContext context) {
@@ -83,23 +89,23 @@ class _TaskDesktopActions extends StatelessWidget {
       children: [
         if (canOpenWizard)
           IconButton(
-            onPressed: () => onWizard(task),
+            onPressed: isBusy ? null : () => onWizard(task),
             icon: const Icon(Icons.route),
             tooltip: 'Guia',
           ),
         if (canComplete)
           IconButton(
-            onPressed: () => onComplete(task),
+            onPressed: isBusy ? null : () => onComplete(task),
             icon: const Icon(Icons.celebration_outlined),
             tooltip: 'Concluir',
           ),
         IconButton(
-          onPressed: () => onEdit(task),
+          onPressed: isBusy ? null : () => onEdit(task),
           icon: const Icon(Icons.edit_outlined),
           tooltip: 'Editar',
         ),
         IconButton(
-          onPressed: () => onDelete(task),
+          onPressed: isBusy ? null : () => onDelete(task),
           icon: Icon(
             Icons.delete_outline,
             color: context.ds.colors.feedbackDanger,
@@ -120,6 +126,7 @@ class _TaskMobileActions extends StatelessWidget {
     required this.onDelete,
     required this.onWizard,
     required this.onComplete,
+    required this.isBusy,
   });
 
   final Task task;
@@ -129,6 +136,7 @@ class _TaskMobileActions extends StatelessWidget {
   final void Function(Task) onDelete;
   final void Function(Task) onWizard;
   final void Function(Task) onComplete;
+  final bool isBusy;
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +151,7 @@ class _TaskMobileActions extends StatelessWidget {
                 : 'Abrir guia passo a passo',
             icon: Icons.route,
             fullWidth: true,
-            onPressed: () => onWizard(task),
+            onPressed: isBusy ? null : () => onWizard(task),
           ),
           SizedBox(height: gap),
         ],
@@ -152,7 +160,7 @@ class _TaskMobileActions extends StatelessWidget {
             label: 'Concluir atividade',
             icon: Icons.celebration,
             fullWidth: true,
-            onPressed: () => onComplete(task),
+            onPressed: isBusy ? null : () => onComplete(task),
           ),
           SizedBox(height: gap),
         ],
@@ -161,7 +169,7 @@ class _TaskMobileActions extends StatelessWidget {
           icon: Icons.edit,
           variant: DSButtonVariant.secondary,
           fullWidth: true,
-          onPressed: () => onEdit(task),
+          onPressed: isBusy ? null : () => onEdit(task),
         ),
         SizedBox(height: gap),
         DSButton(
@@ -169,7 +177,7 @@ class _TaskMobileActions extends StatelessWidget {
           icon: Icons.delete_outline,
           variant: DSButtonVariant.danger,
           fullWidth: true,
-          onPressed: () => onDelete(task),
+          onPressed: isBusy ? null : () => onDelete(task),
         ),
       ],
     );

@@ -21,6 +21,7 @@ class TaskWizardPage extends StatefulWidget {
 class _TaskWizardPageState extends State<TaskWizardPage> {
   final PageController _pageController = PageController();
   int _pageIndex = 0;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -36,6 +37,10 @@ class _TaskWizardPageState extends State<TaskWizardPage> {
   }
 
   Future<void> _finish() async {
+    if (_isSubmitting) {
+      return;
+    }
+
     final task = context.read<TasksController>().taskById(widget.taskId);
     if (task == null || !mounted) {
       return;
@@ -53,31 +58,38 @@ class _TaskWizardPageState extends State<TaskWizardPage> {
       return;
     }
 
-    final confirmed = await showTaskWizardCompleteDialog(context);
-    if (!confirmed || !mounted) {
-      return;
-    }
+    setState(() => _isSubmitting = true);
+    try {
+      final confirmed = await showTaskWizardCompleteDialog(context);
+      if (!confirmed || !mounted) {
+        return;
+      }
 
-    final entry = await context.read<TasksController>().completeTask(task.id);
-    if (!mounted) {
-      return;
-    }
-    await context.read<TasksController>().loadHistory();
-    if (!mounted) {
-      return;
-    }
+      final entry = await context.read<TasksController>().completeTask(task.id);
+      if (!mounted) {
+        return;
+      }
+      await context.read<TasksController>().loadHistory();
+      if (!mounted) {
+        return;
+      }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          entry.positiveMessage,
-          style: context.ds.typography.bodyLarge,
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            entry.positiveMessage,
+            style: context.ds.typography.bodyLarge,
+          ),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 5),
         ),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 5),
-      ),
-    );
-    Navigator.of(context).pop();
+      );
+      Navigator.of(context).pop();
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
   }
 
   void _next(int totalPages) {
@@ -128,37 +140,60 @@ class _TaskWizardPageState extends State<TaskWizardPage> {
         pageIndex: _pageIndex,
         totalSteps: totalSteps,
       ),
-      body: Column(
+      body: Stack(
         children: [
-          TaskWizardProgressBar(
-            pageIndex: _pageIndex,
-            totalSteps: totalSteps,
+          Column(
+            children: [
+              TaskWizardProgressBar(
+                pageIndex: _pageIndex,
+                totalSteps: totalSteps,
+              ),
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: totalSteps,
+                  onPageChanged: _isSubmitting
+                      ? null
+                      : (index) => setState(() => _pageIndex = index),
+                  itemBuilder: (context, index) {
+                    return TaskWizardStepPage(
+                      step: task.steps[index],
+                      onChanged: _isSubmitting
+                          ? (_) {}
+                          : (value) => _toggleStep(task, index, value),
+                    );
+                  },
+                ),
+              ),
+              TaskWizardBottomActions(
+                pageIndex: _pageIndex,
+                totalSteps: totalSteps,
+                onPrevious: _isSubmitting ? () {} : _previous,
+                onNextOrFinish: _isSubmitting
+                    ? () {}
+                    : () {
+                        if (_pageIndex >= totalSteps - 1) {
+                          _finish();
+                        } else {
+                          _next(totalSteps);
+                        }
+                      },
+              ),
+            ],
           ),
-          Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: totalSteps,
-              onPageChanged: (index) => setState(() => _pageIndex = index),
-              itemBuilder: (context, index) {
-                return TaskWizardStepPage(
-                  step: task.steps[index],
-                  onChanged: (value) => _toggleStep(task, index, value),
-                );
-              },
+          if (_isSubmitting)
+            const Positioned.fill(
+              child: IgnorePointer(
+                child: ModalBarrier(
+                  dismissible: false,
+                  color: Colors.black12,
+                ),
+              ),
             ),
-          ),
-          TaskWizardBottomActions(
-            pageIndex: _pageIndex,
-            totalSteps: totalSteps,
-            onPrevious: _previous,
-            onNextOrFinish: () {
-              if (_pageIndex >= totalSteps - 1) {
-                _finish();
-              } else {
-                _next(totalSteps);
-              }
-            },
-          ),
+          if (_isSubmitting)
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
         ],
       ),
     );

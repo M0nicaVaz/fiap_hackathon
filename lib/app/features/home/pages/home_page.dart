@@ -103,12 +103,13 @@ class _HomePageState extends State<HomePage> {
     final pendingTasks = context.select<TasksController, List<Task>>(
       (controller) => controller.tasks,
     );
-    final dueReminders = context.select<TasksController, List<Task>>(
-      (controller) => controller.dueReminders,
-    );
     final profileName = context.select<ProfileController, String?>(
       (controller) => controller.profile?.displayName,
     );
+    final dueReminders = pendingTasks.where((task) {
+      final reminderAt = task.reminderAt;
+      return reminderAt != null && !reminderAt.isAfter(DateTime.now());
+    }).toList();
     final reminders = dueReminders.isNotEmpty
         ? dueReminders
         : pendingTasks.where((task) => task.reminderAt != null).toList();
