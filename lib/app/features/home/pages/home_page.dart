@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:fiap_hackathon/app/navigation/custom_page.dart';
 import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
 import 'package:fiap_hackathon/features/activities/domain/entities/task.dart';
 import 'package:fiap_hackathon/features/activities/presentation/providers/tasks_controller.dart';
@@ -286,7 +287,7 @@ class _HomePageState extends State<HomePage> {
           onTap: () {
             Navigator.of(
               context,
-            ).push(MaterialPageRoute(builder: (_) => const TaskEditorPage()));
+            ).push(customPageRoute(builder: (_) => const TaskEditorPage()));
           },
         ),
         SizedBox(height: ds.spacing.md),
@@ -465,7 +466,7 @@ class _TaskCard extends StatelessWidget {
         child: InkWell(
           onTap: () {
             Navigator.of(context).push(
-              MaterialPageRoute(
+              customPageRoute(
                 builder: (_) => TaskEditorPage(initialTask: task),
               ),
             );

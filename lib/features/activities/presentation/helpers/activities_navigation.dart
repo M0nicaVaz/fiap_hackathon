@@ -1,3 +1,4 @@
+import 'package:fiap_hackathon/app/navigation/custom_page.dart';
 import 'package:fiap_hackathon/features/activities/domain/entities/task.dart';
 import 'package:fiap_hackathon/features/activities/presentation/pages/task_editor_page.dart';
 import 'package:fiap_hackathon/features/activities/presentation/pages/task_wizard_page.dart';
@@ -8,7 +9,7 @@ Future<void> openTaskEditor(
   Task? task,
 }) async {
   await Navigator.of(context).push<void>(
-    MaterialPageRoute(
+    customPageRoute<void>(
       builder: (_) => TaskEditorPage(initialTask: task),
     ),
   );
@@ -19,7 +20,7 @@ Future<void> openTaskWizard(
   Task task,
 ) async {
   await Navigator.of(context).push<void>(
-    MaterialPageRoute(
+    customPageRoute<void>(
       builder: (_) => TaskWizardPage(taskId: task.id),
     ),
   );
