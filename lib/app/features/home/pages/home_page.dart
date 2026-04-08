@@ -92,23 +92,36 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    final accessCtrl = context.watch<AccessibilityPreferencesController>();
-    final taskCtrl = context.watch<TasksController>();
-
-    final pendingTasks = taskCtrl.tasks;
-    final reminders = taskCtrl.dueReminders.isNotEmpty
-        ? taskCtrl.dueReminders
-        : taskCtrl.tasks.where((t) => t.reminderAt != null).toList();
+    final isBasicMode =
+        context.select<AccessibilityPreferencesController, bool>(
+          (controller) => controller.isBasicMode,
+        );
+    final reinforcedFeedback =
+        context.select<AccessibilityPreferencesController, bool>(
+          (controller) => controller.reinforcedFeedback,
+        );
+    final pendingTasks = context.select<TasksController, List<Task>>(
+      (controller) => controller.tasks,
+    );
+    final dueReminders = context.select<TasksController, List<Task>>(
+      (controller) => controller.dueReminders,
+    );
+    final profileName = context.select<ProfileController, String?>(
+      (controller) => controller.profile?.displayName,
+    );
+    final reminders = dueReminders.isNotEmpty
+        ? dueReminders
+        : pendingTasks.where((task) => task.reminderAt != null).toList();
 
     return SingleChildScrollView(
       padding: EdgeInsets.all(ds.spacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildGreetingSection(context),
+          _buildGreetingSection(context, profileName),
           SizedBox(height: ds.spacing.lg),
-          _buildWeatherTimeCard(context, taskCtrl.tasks),
-          if (accessCtrl.isBasicMode) ...[
+          _buildWeatherTimeCard(context, pendingTasks),
+          if (isBasicMode) ...[
             SizedBox(height: ds.spacing.lg),
             _buildSimplifiedNavigation(context),
           ],
@@ -116,7 +129,7 @@ class _HomePageState extends State<HomePage> {
           _buildSectionTitle(
             context,
             'Atividades de Hoje',
-            accessCtrl.reinforcedFeedback,
+            reinforcedFeedback,
             trailing: '${pendingTasks.length} restantes',
           ),
           SizedBox(height: ds.spacing.md),
@@ -125,7 +138,7 @@ class _HomePageState extends State<HomePage> {
           _buildSectionTitle(
             context,
             'Próximos Lembretes',
-            accessCtrl.reinforcedFeedback,
+            reinforcedFeedback,
           ),
           SizedBox(height: ds.spacing.md),
           _buildRemindersList(context, reminders),
@@ -135,13 +148,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildGreetingSection(BuildContext context) {
+  Widget _buildGreetingSection(BuildContext context, String? name) {
     final ds = context.ds;
     final hour = _now.hour;
     final greeting = hour < 12
         ? 'Bom dia'
         : (hour < 18 ? 'Boa tarde' : 'Boa noite');
-    final name = context.watch<ProfileController>().profile?.displayName;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

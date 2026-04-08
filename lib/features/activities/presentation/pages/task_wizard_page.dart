@@ -28,14 +28,6 @@ class _TaskWizardPageState extends State<TaskWizardPage> {
     super.dispose();
   }
 
-  Task? _taskFrom(TasksController controller) {
-    try {
-      return controller.tasks.firstWhere((task) => task.id == widget.taskId);
-    } catch (_) {
-      return null;
-    }
-  }
-
   Future<void> _toggleStep(Task task, int stepIndex, bool value) async {
     final steps = List<TaskStep>.from(task.steps);
     steps[stepIndex] = steps[stepIndex].copyWith(completed: value);
@@ -44,7 +36,7 @@ class _TaskWizardPageState extends State<TaskWizardPage> {
   }
 
   Future<void> _finish() async {
-    final task = _taskFrom(context.read<TasksController>());
+    final task = context.read<TasksController>().taskById(widget.taskId);
     if (task == null || !mounted) {
       return;
     }
@@ -115,7 +107,9 @@ class _TaskWizardPageState extends State<TaskWizardPage> {
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    final task = _taskFrom(context.watch<TasksController>());
+    final task = context.select<TasksController, Task?>(
+      (controller) => controller.taskById(widget.taskId),
+    );
     if (task == null) {
       return const TaskWizardEmptyState(
         message: 'Tarefa não encontrada.',

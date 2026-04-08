@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
+import 'package:fiap_hackathon/features/activities/domain/entities/activity_history_entry.dart';
 import 'package:fiap_hackathon/features/activities/domain/entities/task.dart';
 import 'package:fiap_hackathon/features/activities/presentation/helpers/activities_dialogs.dart';
 import 'package:fiap_hackathon/features/activities/presentation/helpers/activities_formatters.dart';
@@ -138,9 +139,12 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final tasksController = context.watch<TasksController>();
-    final tasks = tasksController.tasks;
-    final history = tasksController.history;
+    final tasks = context.select<TasksController, List<Task>>(
+      (controller) => controller.tasks,
+    );
+    final history = context.select<TasksController, List<ActivityHistoryEntry>>(
+      (controller) => controller.history,
+    );
     final filteredTasks = filterTasksByQuery(tasks, _searchController.text);
 
     return LayoutBuilder(
