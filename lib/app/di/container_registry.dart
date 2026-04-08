@@ -3,10 +3,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/accessibility_preferences/data/datasources/shared_preferences_accessibility_preferences_data_source.dart';
+import '../../features/accessibility_preferences/data/repositories/supabase_remote_accessibility_preferences_repository.dart';
 import '../../features/accessibility_preferences/data/repositories/shared_preferences_accessibility_preferences_repository.dart';
 import '../../features/accessibility_preferences/domain/repositories/accessibility_preferences_repository.dart';
+import '../../features/accessibility_preferences/domain/repositories/remote_accessibility_preferences_repository.dart';
+import '../../features/accessibility_preferences/domain/usecases/load_remote_accessibility_settings_use_case.dart';
 import '../../features/accessibility_preferences/domain/usecases/load_accessibility_settings_use_case.dart';
 import '../../features/accessibility_preferences/domain/usecases/save_accessibility_settings_use_case.dart';
+import '../../features/accessibility_preferences/domain/usecases/sync_accessibility_settings_use_case.dart';
 import '../../features/accessibility_preferences/presentation/providers/accessibility_preferences_controller.dart';
 import '../../features/activities/data/datasources/shared_preferences_tasks_local_data_source.dart';
 import '../../features/activities/data/datasources/tasks_local_data_source.dart';
@@ -25,15 +29,15 @@ import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/usecases/check_session_use_case.dart';
 import '../../features/auth/domain/usecases/enter_use_case.dart';
 import '../../features/auth/domain/usecases/enter_with_google_use_case.dart';
+import '../../features/auth/domain/usecases/get_current_user_use_case.dart';
 import '../../features/auth/domain/usecases/register_use_case.dart';
 import '../../features/auth/domain/usecases/sign_out_use_case.dart';
+import '../../features/auth/domain/usecases/watch_auth_state_use_case.dart';
 import '../../features/auth/presentation/providers/auth_session_controller.dart';
 import '../../features/profile/data/repositories/supabase_profile_repository.dart';
 import '../../features/profile/domain/repositories/profile_repository.dart';
 import '../../features/profile/domain/usecases/get_profile_use_case.dart';
-import '../../features/profile/domain/usecases/load_accessibility_from_supabase_use_case.dart';
 import '../../features/profile/domain/usecases/save_profile_use_case.dart';
-import '../../features/profile/domain/usecases/sync_accessibility_to_supabase_use_case.dart';
 import '../../features/profile/presentation/providers/profile_controller.dart';
 
 abstract final class ContainerRegistry {
@@ -72,16 +76,21 @@ abstract final class ContainerRegistry {
       ..registerLazySingleton<ProfileRepository>(
         () => SupabaseProfileRepository(_getIt()),
       )
+      ..registerLazySingleton<RemoteAccessibilityPreferencesRepository>(
+        () => SupabaseRemoteAccessibilityPreferencesRepository(_getIt()),
+      )
       ..registerLazySingleton(() => CheckSessionUseCase(_getIt()))
       ..registerLazySingleton(() => EnterUseCase(_getIt()))
       ..registerLazySingleton(() => EnterWithGoogleUseCase(_getIt()))
+      ..registerLazySingleton(() => GetCurrentUserUseCase(_getIt()))
       ..registerLazySingleton(() => RegisterUseCase(_getIt()))
       ..registerLazySingleton(() => SignOutUseCase(_getIt()))
+      ..registerLazySingleton(() => WatchAuthStateUseCase(_getIt()))
       ..registerLazySingleton(() => GetProfileUseCase(_getIt()))
       ..registerLazySingleton(() => SaveProfileUseCase(_getIt()))
-      ..registerLazySingleton(() => SyncAccessibilityToSupabaseUseCase(_getIt()))
+      ..registerLazySingleton(() => SyncAccessibilitySettingsUseCase(_getIt()))
       ..registerLazySingleton(
-        () => LoadAccessibilityFromSupabaseUseCase(_getIt()),
+        () => LoadRemoteAccessibilitySettingsUseCase(_getIt()),
       )
       ..registerLazySingleton(
         () => AuthSessionController(
@@ -97,7 +106,8 @@ abstract final class ContainerRegistry {
         () => ProfileController(
           getProfileUseCase: _getIt(),
           saveProfileUseCase: _getIt(),
-          authProvider: _getIt<AuthSessionController>(),
+          getCurrentUserUseCase: _getIt(),
+          watchAuthStateUseCase: _getIt(),
         ),
       )
       ..registerLazySingleton(
@@ -112,9 +122,10 @@ abstract final class ContainerRegistry {
         () => AccessibilityPreferencesController(
           loadSettingsUseCase: _getIt(),
           saveSettingsUseCase: _getIt(),
-          syncToSupabaseUseCase: _getIt(),
-          loadFromSupabaseUseCase: _getIt(),
-          authRepository: _getIt(),
+          syncAccessibilitySettingsUseCase: _getIt(),
+          loadRemoteAccessibilitySettingsUseCase: _getIt(),
+          getCurrentUserUseCase: _getIt(),
+          watchAuthStateUseCase: _getIt(),
         ),
       )
       ..registerLazySingleton<TasksLocalDataSource>(

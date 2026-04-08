@@ -2,34 +2,43 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
-import '../../../../features/auth/domain/repositories/auth_repository.dart';
-import '../../../../features/profile/domain/usecases/load_accessibility_from_supabase_use_case.dart';
-import '../../../../features/profile/domain/usecases/sync_accessibility_to_supabase_use_case.dart';
+import '../../../../features/auth/domain/entities/user_profile.dart';
+import '../../../../features/auth/domain/usecases/get_current_user_use_case.dart';
+import '../../../../features/auth/domain/usecases/watch_auth_state_use_case.dart';
 import '../../domain/entities/accessibility_settings.dart';
+import '../../domain/usecases/load_remote_accessibility_settings_use_case.dart';
 import '../../domain/usecases/load_accessibility_settings_use_case.dart';
 import '../../domain/usecases/save_accessibility_settings_use_case.dart';
+import '../../domain/usecases/sync_accessibility_settings_use_case.dart';
 import 'package:fiap_hackathon/core/design_system/themes/color_themes.dart';
 
 class AccessibilityPreferencesController extends ChangeNotifier {
   AccessibilityPreferencesController({
     required LoadAccessibilitySettingsUseCase loadSettingsUseCase,
     required SaveAccessibilitySettingsUseCase saveSettingsUseCase,
-    SyncAccessibilityToSupabaseUseCase? syncToSupabaseUseCase,
-    LoadAccessibilityFromSupabaseUseCase? loadFromSupabaseUseCase,
-    AuthRepository? authRepository,
-  })  : _saveSettingsUseCase = saveSettingsUseCase,
-        _syncToSupabaseUseCase = syncToSupabaseUseCase,
-        _loadFromSupabaseUseCase = loadFromSupabaseUseCase,
-        _authRepository = authRepository,
-        _settings = loadSettingsUseCase() {
+    SyncAccessibilitySettingsUseCase? syncAccessibilitySettingsUseCase,
+    LoadRemoteAccessibilitySettingsUseCase?
+    loadRemoteAccessibilitySettingsUseCase,
+    GetCurrentUserUseCase? getCurrentUserUseCase,
+    WatchAuthStateUseCase? watchAuthStateUseCase,
+  }) : _saveSettingsUseCase = saveSettingsUseCase,
+       _syncAccessibilitySettingsUseCase = syncAccessibilitySettingsUseCase,
+       _loadRemoteAccessibilitySettingsUseCase =
+           loadRemoteAccessibilitySettingsUseCase,
+       _getCurrentUserUseCase = getCurrentUserUseCase,
+       _watchAuthStateUseCase = watchAuthStateUseCase,
+       _settings = loadSettingsUseCase() {
     _listenToAuth();
   }
 
   final SaveAccessibilitySettingsUseCase _saveSettingsUseCase;
-  final SyncAccessibilityToSupabaseUseCase? _syncToSupabaseUseCase;
-  final LoadAccessibilityFromSupabaseUseCase? _loadFromSupabaseUseCase;
-  final AuthRepository? _authRepository;
-  StreamSubscription<dynamic>? _authSub;
+  final SyncAccessibilitySettingsUseCase? _syncAccessibilitySettingsUseCase;
+  final LoadRemoteAccessibilitySettingsUseCase?
+  _loadRemoteAccessibilitySettingsUseCase;
+  final GetCurrentUserUseCase? _getCurrentUserUseCase;
+  final WatchAuthStateUseCase? _watchAuthStateUseCase;
+  StreamSubscription<UserProfile?>? _authSub;
+  String? _loadedRemoteSettingsForUid;
 
   AccessibilitySettings _settings;
 
@@ -75,15 +84,30 @@ class AccessibilityPreferencesController extends ChangeNotifier {
   }
 
   void _listenToAuth() {
-    final repo = _authRepository;
-    if (repo == null) return;
-    _authSub = repo.authStateChanges.listen((user) {
-      if (user != null) _loadFromSupabase(user.uid);
+    final currentUser = _getCurrentUserUseCase?.call();
+    if (currentUser != null) {
+      _loadRemoteSettingsFor(currentUser);
+    }
+
+    final watchAuthStateUseCase = _watchAuthStateUseCase;
+    if (watchAuthStateUseCase == null) return;
+    _authSub = watchAuthStateUseCase().listen((user) {
+      if (user == null) {
+        _loadedRemoteSettingsForUid = null;
+        return;
+      }
+      _loadRemoteSettingsFor(user);
     });
   }
 
-  Future<void> _loadFromSupabase(String uid) async {
-    final useCase = _loadFromSupabaseUseCase;
+  void _loadRemoteSettingsFor(UserProfile user) {
+    if (_loadedRemoteSettingsForUid == user.uid) return;
+    _loadedRemoteSettingsForUid = user.uid;
+    unawaited(_loadRemoteSettings(user.uid));
+  }
+
+  Future<void> _loadRemoteSettings(String uid) async {
+    final useCase = _loadRemoteAccessibilitySettingsUseCase;
     if (useCase == null) return;
     try {
       final remote = await useCase(uid);
@@ -105,9 +129,9 @@ class AccessibilityPreferencesController extends ChangeNotifier {
     _settings = settings;
     notifyListeners();
     unawaited(_saveSettingsUseCase(settings));
-    final uid = _authRepository?.currentUser?.uid;
-    if (uid != null && _syncToSupabaseUseCase != null) {
-      unawaited(_syncToSupabaseUseCase(uid, settings));
+    final uid = _getCurrentUserUseCase?.call()?.uid;
+    if (uid != null && _syncAccessibilitySettingsUseCase != null) {
+      unawaited(_syncAccessibilitySettingsUseCase(uid, settings));
     }
   }
 }
