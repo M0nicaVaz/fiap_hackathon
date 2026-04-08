@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/errors/failure_mapper.dart';
+import '../../../../core/result/result.dart';
 import '../../domain/entities/user_profile.dart';
 import '../../domain/repositories/auth_repository.dart';
 
@@ -22,26 +24,52 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> enter({required String email, required String password}) async {
-    await _client.auth.signInWithPassword(email: email, password: password);
+  Future<Result<void>> enter({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await _client.auth.signInWithPassword(email: email, password: password);
+      return const Success<void>(null);
+    } catch (error, stackTrace) {
+      return FailureResult(FailureMapper.fromException(error, stackTrace));
+    }
   }
 
   @override
-  Future<void> register({required String email, required String password}) async {
-    await _client.auth.signUp(email: email, password: password);
+  Future<Result<void>> register({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await _client.auth.signUp(email: email, password: password);
+      return const Success<void>(null);
+    } catch (error, stackTrace) {
+      return FailureResult(FailureMapper.fromException(error, stackTrace));
+    }
   }
 
   @override
-  Future<void> enterWithGoogle() async {
-    await _client.auth.signInWithOAuth(
-      OAuthProvider.google,
-      redirectTo: Uri.base.origin,
-    );
+  Future<Result<void>> enterWithGoogle() async {
+    try {
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: Uri.base.origin,
+      );
+      return const Success<void>(null);
+    } catch (error, stackTrace) {
+      return FailureResult(FailureMapper.fromException(error, stackTrace));
+    }
   }
 
   @override
-  Future<void> signOut() async {
-    await _client.auth.signOut();
+  Future<Result<void>> signOut() async {
+    try {
+      await _client.auth.signOut();
+      return const Success<void>(null);
+    } catch (error, stackTrace) {
+      return FailureResult(FailureMapper.fromException(error, stackTrace));
+    }
   }
 
   UserProfile? _mapUser(User? user) {
@@ -49,7 +77,8 @@ class SupabaseAuthRepository implements AuthRepository {
     return UserProfile(
       uid: user.id,
       email: user.email ?? '',
-      displayName: user.userMetadata?['full_name'] as String? ??
+      displayName:
+          user.userMetadata?['full_name'] as String? ??
           user.userMetadata?['name'] as String?,
       photoUrl: user.userMetadata?['avatar_url'] as String?,
     );

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import '../../domain/entities/activity_history_entry.dart';
 import '../../domain/entities/task.dart';
@@ -29,6 +30,7 @@ class TasksController extends ChangeNotifier {
         _saveTaskProgressUseCase = saveTaskProgressUseCase {
     _subscription = _watchTasksUseCase().listen((list) {
       _tasks = list;
+      _tasksView = UnmodifiableListView(_tasks);
       notifyListeners();
     });
   }
@@ -43,9 +45,12 @@ class TasksController extends ChangeNotifier {
   StreamSubscription<List<Task>>? _subscription;
   List<Task> _tasks = [];
   List<ActivityHistoryEntry> _history = [];
+  late UnmodifiableListView<Task> _tasksView = UnmodifiableListView(_tasks);
+  late UnmodifiableListView<ActivityHistoryEntry> _historyView =
+      UnmodifiableListView(_history);
   final Set<String> _dismissedReminderIds = {};
-  List<Task> get tasks => List.unmodifiable(_tasks);
-  List<ActivityHistoryEntry> get history => List.unmodifiable(_history);
+  List<Task> get tasks => _tasksView;
+  List<ActivityHistoryEntry> get history => _historyView;
   Task? taskById(String id) {
     try {
       return _tasks.firstWhere((t) => t.id == id);
@@ -66,6 +71,7 @@ class TasksController extends ChangeNotifier {
 
   Future<void> loadHistory() async {
     _history = await _getActivityHistoryUseCase();
+    _historyView = UnmodifiableListView(_history);
     notifyListeners();
   }
 

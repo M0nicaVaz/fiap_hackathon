@@ -1,5 +1,6 @@
 import '../../domain/entities/user_profile.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../../../core/result/result.dart';
 
 class InMemoryAuthRepository implements AuthRepository {
   bool _isSignedIn = false;
@@ -16,22 +17,32 @@ class InMemoryAuthRepository implements AuthRepository {
   Stream<UserProfile?> get authStateChanges => const Stream.empty();
 
   @override
-  Future<void> enter({required String email, required String password}) async {
+  Future<Result<void>> enter({
+    required String email,
+    required String password,
+  }) async {
     _isSignedIn = true;
+    return const Success<void>(null);
   }
 
   @override
-  Future<void> register({required String email, required String password}) async {
+  Future<Result<void>> register({
+    required String email,
+    required String password,
+  }) async {
     _isSignedIn = true;
+    return const Success<void>(null);
   }
 
   @override
-  Future<void> enterWithGoogle() async {
+  Future<Result<void>> enterWithGoogle() async {
     _isSignedIn = true;
+    return const Success<void>(null);
   }
 
   @override
-  Future<void> signOut() async {
+  Future<Result<void>> signOut() async {
     _isSignedIn = false;
+    return const Success<void>(null);
   }
 }

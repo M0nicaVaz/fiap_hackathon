@@ -1,4 +1,5 @@
 import '../entities/user_profile.dart';
+import '../../../../core/result/result.dart';
 
 abstract interface class AuthRepository {
   bool get isSignedIn;
@@ -7,11 +8,14 @@ abstract interface class AuthRepository {
 
   Stream<UserProfile?> get authStateChanges;
 
-  Future<void> enter({required String email, required String password});
+  Future<Result<void>> enter({required String email, required String password});
 
-  Future<void> register({required String email, required String password});
+  Future<Result<void>> register({
+    required String email,
+    required String password,
+  });
 
-  Future<void> enterWithGoogle();
+  Future<Result<void>> enterWithGoogle();
 
-  Future<void> signOut();
+  Future<Result<void>> signOut();
 }

@@ -1,60 +1,105 @@
 # SeniorEase | FIAP Hackathon
 
-SeniorEase é uma plataforma digital inclusiva para pessoas idosas, com foco em acessibilidade.
+SeniorEase é um aplicativo focado em acessibilidade e autonomia para pessoas idosas. O projeto prioriza leitura, contraste, simplificação da interface e fluxos curtos para tarefas do dia a dia, como acompanhamento de atividades, lembretes e configurações de acessibilidade.
 
-## Stack
+## Stack atual
 
-- `Flutter` como plataforma única para `Web`, `Android` e `iOS`.
-- `Clean Architecture` por feature: `domain`, `data`, `presentation`.
-- `Provider` para estado/apresentação.
-- `get_it` manual para injeção de dependência (`ContainerRegistry`).
-- `go_router` para navegação e regras de redirect por sessão.
-- `Firebase` (`firebase_core`, `firebase_auth`, `cloud_firestore`) como backend inicial.
+- `Flutter` para `Web`, `Android` e `iOS`
+- `Provider` para estado de apresentação
+- `get_it` para injeção de dependência via `ContainerRegistry`
+- `go_router` para navegação, shell principal e redirects de sessão
+- `Supabase` para autenticação e persistência remota
+- `SharedPreferences` para persistência local
+- `Clean Architecture` por feature: `data`, `domain`, `presentation`
 
-## Estrutura do projeto
+## Funcionalidades atuais
+
+- autenticação por e-mail/senha e login com Google
+- home com visão resumida das atividades e lembretes
+- fluxo de atividades com listagem, criação, edição, conclusão e histórico
+- wizard passo a passo para atividades com etapas
+- preferências de acessibilidade com sincronização local/remota
+- perfil do usuário
+
+## Arquitetura
+
+Princípios usados no projeto:
+
+- `core/` contém design system, tratamento de erros e utilitários compartilhados
+- `features/<feature>/` concentra regras, repositórios, use cases e estado de cada capability
+- `app/` concentra bootstrap, DI, navegação e shell principal
+- a UI usa um design system próprio, com tema, tokens e widgets compartilhados
+
+Estrutura principal:
 
 ```text
 lib/
- ├─ core/
- │   ├─ design_system/     # tokens, temas e widgets compartilhados
- │   ├─ errors/            # falhas padronizadas + mapper para mensagem amigável
- │   └─ result/            # Result<T> (Success/FailureResult)
- ├─ app/
- │   ├─ di/                # ContainerRegistry (get_it manual)
- │   ├─ navigation/        # AppRouter + constantes de rota
- │   └─ presentation/      # Home shell base
- ├─ features/
- │   ├─ accessibility_preferences/
- │   │   └─ {domain,data,presentation}
- │   ├─ activities/
- │   │   └─ {domain,data,presentation}
- │   └─ auth/
- │      └─ {domain,data,presentation}
- ├─ firebase_options.dart  # opções Firebase (placeholder nesta fase)
- └─ main.dart              # bootstrap Firebase + DI + Providers + Router
+├─ app/
+│  ├─ di/                # registro de dependências com get_it
+│  ├─ navigation/        # rotas, custom pages e AppRouter
+│  └─ presentation/      # AppShell e estrutura de navegação principal
+├─ core/
+│  ├─ design_system/     # temas, tokens, builder de tema e widgets compartilhados
+│  ├─ errors/            # falhas e mapeamento de mensagens
+│  └─ result/            # abstração Result<T>
+├─ features/
+│  ├─ accessibility_preferences/
+│  ├─ activities/
+│  ├─ auth/
+│  └─ profile/
+└─ main.dart             # bootstrap do app, Supabase, DI e Providers
 ```
 
-## Direção arquitetural
+## Navegação
 
-- `core` deve conter apenas elementos compartilhados e agnósticos de negócio.
-- Cada capability do produto deve viver em `features/<feature>`, inclusive estado, use cases e persistência.
-- `app` deve orquestrar bootstrap, DI e navegação, sem absorver lógica de feature.
-- A navegação principal agora usa `StatefulShellRoute`, com abas para `home`, `activities` e `accessibility_preferences`.
+- a navegação principal usa `StatefulShellRoute`
+- as abas atuais são `home`, `activities` e `customization`
+- telas abertas por push usam a mesma transição customizada definida em `app/navigation/custom_page.dart`
 
 ## Como executar
 
-1. Instalar dependências:
-   - `flutter pub get`
-2. Configurar Firebase:
-   - `firebase login`
-   - `flutterfire configure --platforms=android,ios,web --project=<id-projeto>`
-3. Executar:
-   - `flutter run -d chrome` (Web)
-   - `flutter run` (Mobile, com emulador/simulador ativo)
+### Pré-requisitos
 
-## Qualidade e validação
+- Flutter SDK compatível com o `sdk: ^3.11.0`
+- Chrome ou outro target web instalado
+- emulador/simulador configurado para mobile, se necessário
 
-- Análise estática:
-  - `flutter analyze`
-- Testes:
-  - `flutter test`
+### Instalação
+
+```bash
+flutter pub get
+```
+
+### Configuração
+
+O app inicializa o `Supabase` diretamente em [`lib/main.dart`](./lib/main.dart). Para rodar em outro projeto/ambiente, ajuste as credenciais de `url` e `anonKey` antes da execução.
+
+### Execução
+
+```bash
+flutter run -d chrome
+```
+
+ou, para mobile:
+
+```bash
+flutter run
+```
+
+## Qualidade
+
+Análise estática:
+
+```bash
+flutter analyze
+```
+
+Testes:
+
+```bash
+flutter test
+```
+
+Observação:
+
+- atualmente existe teste de DI que depende de inicialização coerente do `Supabase`; se o ambiente de teste não simular isso, alguns testes podem falhar mesmo sem regressão funcional da UI

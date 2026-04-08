@@ -1,5 +1,5 @@
 name: fiap_hackathon
-description: "A new Flutter project."
+description: "SeniorEase: aplicativo acessível para organização de rotina e atividades."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

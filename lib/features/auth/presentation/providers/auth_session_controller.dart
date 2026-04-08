@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import '../../../../core/errors/failure.dart';
+import '../../../../core/errors/failure_mapper.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../domain/entities/user_profile.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../../../core/result/result.dart';
 import '../../domain/usecases/check_session_use_case.dart';
 import '../../domain/usecases/enter_use_case.dart';
 import '../../domain/usecases/enter_with_google_use_case.dart';
@@ -37,12 +40,12 @@ class AuthSessionController extends ChangeNotifier
     required RegisterUseCase registerUseCase,
     required SignOutUseCase signOutUseCase,
     required AuthRepository authRepository,
-  })  : _checkSessionUseCase = checkSessionUseCase,
-        _enterUseCase = enterUseCase,
-        _enterWithGoogleUseCase = enterWithGoogleUseCase,
-        _registerUseCase = registerUseCase,
-        _signOutUseCase = signOutUseCase,
-        _authRepository = authRepository {
+  }) : _checkSessionUseCase = checkSessionUseCase,
+       _enterUseCase = enterUseCase,
+       _enterWithGoogleUseCase = enterWithGoogleUseCase,
+       _registerUseCase = registerUseCase,
+       _signOutUseCase = signOutUseCase,
+       _authRepository = authRepository {
     _init();
   }
 
@@ -55,13 +58,14 @@ class AuthSessionController extends ChangeNotifier
 
   StreamSubscription<UserProfile?>? _authSub;
   AuthSessionStatus _status = AuthSessionStatus.unknown;
-  String? _errorMessage;
+  Failure? _failure;
 
   @override
   AuthSessionStatus get status => _status;
 
   @override
-  String? get errorMessage => _errorMessage;
+  String? get errorMessage =>
+      _failure == null ? null : FailureMapper.toUserMessage(_failure!);
 
   @override
   UserProfile? get currentUser => _authRepository.currentUser;
@@ -92,65 +96,47 @@ class AuthSessionController extends ChangeNotifier
 
   @override
   Future<void> enter({required String email, required String password}) async {
-    _errorMessage = null;
-    try {
-      await _enterUseCase(email: email, password: password);
-    } catch (e) {
-      _errorMessage = _friendlyError(e);
-    }
+    _failure = null;
+    final result = await _enterUseCase(email: email, password: password);
+    _storeFailure(result);
     notifyListeners();
   }
 
   @override
-  Future<void> register({required String email, required String password}) async {
-    _errorMessage = null;
-    try {
-      await _registerUseCase(email: email, password: password);
-    } catch (e) {
-      _errorMessage = _friendlyError(e);
-    }
+  Future<void> register({
+    required String email,
+    required String password,
+  }) async {
+    _failure = null;
+    final result = await _registerUseCase(email: email, password: password);
+    _storeFailure(result);
     notifyListeners();
   }
 
   @override
   Future<void> enterWithGoogle() async {
-    _errorMessage = null;
-    try {
-      await _enterWithGoogleUseCase();
-    } catch (e) {
-      _errorMessage = _friendlyError(e);
-      notifyListeners();
-    }
+    _failure = null;
+    final result = await _enterWithGoogleUseCase();
+    _storeFailure(result);
+    notifyListeners();
   }
 
   @override
   Future<void> signOut() async {
-    await _signOutUseCase();
-    _status = AuthSessionStatus.unauthenticated;
+    _failure = null;
+    final result = await _signOutUseCase();
+    if (result.isSuccess) {
+      _status = AuthSessionStatus.unauthenticated;
+    } else {
+      _storeFailure(result);
+    }
     notifyListeners();
   }
 
-  String _friendlyError(Object e) {
-    final msg = e.toString().toLowerCase();
-    if (msg.contains('invalid login') || msg.contains('invalid credentials') || msg.contains('wrong password')) {
-      return 'E-mail ou senha inválidos.';
+  void _storeFailure(Result<void> result) {
+    if (result case FailureResult<void>(failure: final failure)) {
+      _failure = failure;
     }
-    if (msg.contains('email not confirmed')) {
-      return 'Confirme seu e-mail antes de entrar.';
-    }
-    if (msg.contains('already registered') || msg.contains('already exists') || msg.contains('422')) {
-      return 'Este e-mail já está cadastrado.';
-    }
-    if (msg.contains('weak password') || msg.contains('password should be')) {
-      return 'Senha muito fraca. Use ao menos 6 caracteres.';
-    }
-    if (msg.contains('invalid email') || msg.contains('unable to validate email')) {
-      return 'E-mail inválido.';
-    }
-    if (msg.contains('network') || msg.contains('connection') || msg.contains('socket')) {
-      return 'Sem conexão. Verifique sua internet.';
-    }
-    return 'Ocorreu um erro. Tente novamente.';
   }
 
   @override

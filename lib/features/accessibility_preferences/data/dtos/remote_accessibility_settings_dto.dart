@@ -1,7 +1,7 @@
 import '../../../../core/design_system/themes/color_themes.dart';
-import '../../../../features/accessibility_preferences/domain/entities/accessibility_settings.dart';
+import '../../domain/entities/accessibility_settings.dart';
 
-class AccessibilitySettingsDto {
+class RemoteAccessibilitySettingsDto {
   static AccessibilitySettings fromRow(Map<String, dynamic> row) {
     return AccessibilitySettings(
       fontScale: (row['font_scale'] as num?)?.toDouble() ?? 1.0,
