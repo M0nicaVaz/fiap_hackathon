@@ -131,4 +131,7 @@ class TasksRepositoryImpl implements TasksRepository {
     await _dataSource.saveTasks(tasks);
     return next;
   }
+
+  @override
+  Future<void> refreshTasks() => _dataSource.emitCurrent();
 }

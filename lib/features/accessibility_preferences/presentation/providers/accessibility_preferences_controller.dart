@@ -55,8 +55,9 @@ class AccessibilityPreferencesController extends ChangeNotifier {
   }
 
   void setFontScale(double scale) {
-    if (_settings.fontScale == scale) return;
-    _apply(_settings.copyWith(fontScale: scale));
+    final clamped = scale.clamp(0.8, 1.5);
+    if (_settings.fontScale == clamped) return;
+    _apply(_settings.copyWith(fontScale: clamped));
   }
 
   void setSpacingScale(double scale) {

@@ -108,7 +108,11 @@ class AppShell extends StatelessWidget {
                         return NavigationRailDestination(
                           icon: item.icon,
                           selectedIcon: item.selectedIcon,
-                          label: Text(item.label),
+                          label: Text(
+                            item.label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         );
                       }).toList(),
                     ),

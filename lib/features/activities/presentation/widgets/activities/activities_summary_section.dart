@@ -122,6 +122,8 @@ class _ActivitiesTab extends StatelessWidget {
                 child: Text(
                   '$label${count > 0 ? ' ($count)' : ''}',
                   textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: ds.typography.bodyLarge.copyWith(
                     fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
                     color: selected

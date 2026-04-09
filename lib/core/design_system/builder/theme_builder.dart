@@ -81,5 +81,24 @@ ThemeData buildTheme(AppDesignSystem ds) {
         vertical: ds.spacing.md,
       ),
     ),
+    navigationBarTheme: NavigationBarThemeData(
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        final isSelected = states.contains(WidgetState.selected);
+        return ds.typography.caption.copyWith(
+          height: 1.0,
+          overflow: TextOverflow.ellipsis,
+          color: isSelected ? ds.colors.primary : ds.colors.textSecondary,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        );
+      }),
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        final isSelected = states.contains(WidgetState.selected);
+        return IconThemeData(
+          color: isSelected ? ds.colors.primary : ds.colors.textSecondary,
+          size: ds.icons.md,
+        );
+      }),
+      indicatorColor: ds.colors.primary.withValues(alpha: 0.1),
+    ),
   );
 }

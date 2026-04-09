@@ -32,7 +32,9 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TasksController>().loadHistory();
+      final controller = context.read<TasksController>();
+      controller.loadHistory();
+      controller.refreshTasks();
       _tickReminders();
     });
     _reminderTimer = Timer.periodic(

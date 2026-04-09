@@ -203,6 +203,7 @@ class LayoutTaskCardRow extends StatelessWidget {
     this.onOpenGuide,
     this.showCheckbox = true,
     this.completedLook = false,
+    this.trailing,
   });
 
   final String title;
@@ -214,6 +215,7 @@ class LayoutTaskCardRow extends StatelessWidget {
   final VoidCallback? onOpenGuide;
   final bool showCheckbox;
   final bool completedLook;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -248,16 +250,13 @@ class LayoutTaskCardRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       if (categoryIcon != null) ...[
-                        Padding(
-                          padding: EdgeInsets.only(top: ds.spacing.xs / 2),
-                          child: Icon(
-                            categoryIcon,
-                            size: ds.icons.sm,
-                            color: ds.colors.primary,
-                          ),
+                        Icon(
+                          categoryIcon,
+                          size: ds.icons.sm,
+                          color: ds.colors.primary,
                         ),
                         SizedBox(width: ds.spacing.xs),
                       ],
@@ -292,6 +291,10 @@ class LayoutTaskCardRow extends StatelessWidget {
                 ],
               ),
             ),
+            if (trailing != null) ...[
+              SizedBox(width: ds.spacing.md),
+              trailing!,
+            ],
           ],
         ),
       ),

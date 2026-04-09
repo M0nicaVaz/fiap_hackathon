@@ -16,7 +16,7 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
   final SupabaseClient _client;
   final _random = Random();
 
-  StreamSubscription<List<Map<String, dynamic>>>? _realtimeSub;
+  // StreamSubscription<List<Map<String, dynamic>>>? _realtimeSub;
   final _controller = StreamController<List<Task>>.broadcast();
 
   String? get _userId => _client.auth.currentUser?.id;
@@ -43,22 +43,8 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
   }
 
   Future<void> _init() async {
-    try {
-      final uid = await _requireUserId();
-      _realtimeSub = _client
-          .from('tasks')
-          .stream(primaryKey: ['id'])
-          .eq('user_id', uid)
-          .order('created_at')
-          .listen(
-            (rows) => _controller.add(
-              rows.map((r) => TaskPersistenceMapper.taskFromMap(_rowToMap(r))).toList(),
-            ),
-            onError: (_) => _controller.add([]),
-          );
-    } catch (_) {
-      _controller.add([]);
-    }
+    // Realtime desativado por performance e estabilidade (Uso de Pull model agora)
+    // await emitCurrent();
   }
 
   @override
@@ -93,7 +79,8 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
     if (tasks.isNotEmpty) {
       await _client.from('tasks').upsert(tasks.map((t) => _taskToRow(t, uid)).toList());
     }
-    // O stream Realtime emitirá automaticamente — não precisa emitir manualmente
+    // Emite o estado atualizado manualmente para refletir na UI imediatamente
+    _controller.add(tasks);
   }
 
   @override
@@ -164,7 +151,7 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
       };
 
   void dispose() {
-    _realtimeSub?.cancel();
+    // _realtimeSub?.cancel();
     _controller.close();
   }
 }
