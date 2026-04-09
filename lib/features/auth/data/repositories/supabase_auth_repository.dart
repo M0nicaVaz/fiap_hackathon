@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/errors/failure_mapper.dart';
@@ -54,7 +55,9 @@ class SupabaseAuthRepository implements AuthRepository {
     try {
       await _client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: Uri.base.origin,
+        redirectTo: kIsWeb
+            ? Uri.base.origin
+            : 'https://vmyacifgkzsefkitjzuk.supabase.co/auth/v1/callback',
       );
       return const Success<void>(null);
     } catch (error, stackTrace) {
