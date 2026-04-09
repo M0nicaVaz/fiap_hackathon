@@ -10,20 +10,20 @@ import 'tasks_local_data_source.dart';
 
 class SupabaseTasksDataSource implements TasksLocalDataSource {
   SupabaseTasksDataSource(this._client) {
-    loadTasks().then(_controller.add).catchError((_) => _controller.add([]));
+    _init();
   }
 
   final SupabaseClient _client;
-
-  final _controller = StreamController<List<Task>>.broadcast();
   final _random = Random();
+
+  StreamSubscription<List<Map<String, dynamic>>>? _realtimeSub;
+  final _controller = StreamController<List<Task>>.broadcast();
 
   String? get _userId => _client.auth.currentUser?.id;
 
   Future<String> _requireUserId() async {
     final id = _userId;
     if (id != null) return id;
-    // Aguarda até 5s pela sessão ser restaurada
     final completer = Completer<String>();
     late StreamSubscription sub;
     sub = _client.auth.onAuthStateChange.listen((event) {
@@ -40,6 +40,25 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
       }
     });
     return completer.future;
+  }
+
+  Future<void> _init() async {
+    try {
+      final uid = await _requireUserId();
+      _realtimeSub = _client
+          .from('tasks')
+          .stream(primaryKey: ['id'])
+          .eq('user_id', uid)
+          .order('created_at')
+          .listen(
+            (rows) => _controller.add(
+              rows.map((r) => TaskPersistenceMapper.taskFromMap(_rowToMap(r))).toList(),
+            ),
+            onError: (_) => _controller.add([]),
+          );
+    } catch (_) {
+      _controller.add([]);
+    }
   }
 
   @override
@@ -66,13 +85,15 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
   Future<void> saveTasks(List<Task> tasks) async {
     final uid = await _requireUserId();
     final currentIds = tasks.map((t) => t.id).toList();
-    // Remove tarefas deletadas
-    await _client.from('tasks').delete().eq('user_id', uid).not('id', 'in', currentIds.isEmpty ? [''] : currentIds);
-    // Upsert tarefas existentes/novas
+    await _client
+        .from('tasks')
+        .delete()
+        .eq('user_id', uid)
+        .not('id', 'in', currentIds.isEmpty ? [''] : currentIds);
     if (tasks.isNotEmpty) {
       await _client.from('tasks').upsert(tasks.map((t) => _taskToRow(t, uid)).toList());
     }
-    _controller.add(tasks);
+    // O stream Realtime emitirá automaticamente — não precisa emitir manualmente
   }
 
   @override
@@ -143,6 +164,7 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
       };
 
   void dispose() {
+    _realtimeSub?.cancel();
     _controller.close();
   }
 }
