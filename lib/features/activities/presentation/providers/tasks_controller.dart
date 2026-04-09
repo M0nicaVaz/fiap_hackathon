@@ -23,20 +23,19 @@ class TasksController extends ChangeNotifier {
     required GetActivityHistoryUseCase getActivityHistoryUseCase,
     required SaveTaskProgressUseCase saveTaskProgressUseCase,
     required RefreshTasksUseCase refreshTasksUseCase,
-  })  : _watchTasksUseCase = watchTasksUseCase,
-        _createTaskUseCase = createTaskUseCase,
-        _updateTaskUseCase = updateTaskUseCase,
-        _deleteTaskUseCase = deleteTaskUseCase,
-        _completeTaskUseCase = completeTaskUseCase,
-        _getActivityHistoryUseCase = getActivityHistoryUseCase,
-        _saveTaskProgressUseCase = saveTaskProgressUseCase,
-        _refreshTasksUseCase = refreshTasksUseCase {
+  }) : _watchTasksUseCase = watchTasksUseCase,
+       _createTaskUseCase = createTaskUseCase,
+       _updateTaskUseCase = updateTaskUseCase,
+       _deleteTaskUseCase = deleteTaskUseCase,
+       _completeTaskUseCase = completeTaskUseCase,
+       _getActivityHistoryUseCase = getActivityHistoryUseCase,
+       _saveTaskProgressUseCase = saveTaskProgressUseCase,
+       _refreshTasksUseCase = refreshTasksUseCase {
     _subscription = _watchTasksUseCase().listen((list) {
       _tasks = list;
       _tasksView = UnmodifiableListView(_tasks);
       notifyListeners();
     });
-    // Força a primeira carga ao iniciar o controller
     refreshTasks();
   }
 
@@ -109,9 +108,7 @@ class TasksController extends ChangeNotifier {
   Future<Task> saveProgress(Task task) => _saveTaskProgressUseCase(task);
 
   Future<void> refreshTasks() async {
-    // Dispara a busca no DataSource/Repository
     await _refreshTasksUseCase();
-    // A UI será notificada via streamSubscription que já está ouvindo o DataSource
   }
 
   @override
