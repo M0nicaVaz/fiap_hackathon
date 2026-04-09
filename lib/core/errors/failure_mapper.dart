@@ -29,16 +29,11 @@ abstract final class FailureMapper {
   static String toUserMessage(Failure failure) {
     return switch (failure) {
       ValidationFailure() =>
-        failure.message ??
-            'Dados invalidos. Revise os campos e tente novamente.',
-      AuthFailure() =>
-        failure.message ?? 'Falha de autenticacao. Tente novamente.',
-      PermissionFailure() =>
-        failure.message ?? 'Voce nao tem permissao para executar esta acao.',
-      NotFoundFailure() =>
-        failure.message ?? 'Nao foi possivel encontrar os dados solicitados.',
-      UnknownFailure() =>
-        failure.message ?? 'Ocorreu um erro inesperado. Tente novamente.',
+        'Dados invalidos. Revise os campos e tente novamente.',
+      AuthFailure() => 'Falha de autenticacao. Tente novamente.',
+      PermissionFailure() => 'Voce nao tem permissao para executar esta acao.',
+      NotFoundFailure() => 'Nao foi possivel encontrar os dados solicitados.',
+      UnknownFailure() => 'Ocorreu um erro inesperado. Tente novamente.',
     };
   }
 }

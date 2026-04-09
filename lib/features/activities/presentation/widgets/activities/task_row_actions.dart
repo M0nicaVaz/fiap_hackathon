@@ -4,10 +4,7 @@ import 'package:fiap_hackathon/features/activities/domain/entities/task.dart';
 import 'package:fiap_hackathon/features/activities/domain/entities/task_status.dart';
 import 'package:flutter/material.dart';
 
-enum TaskRowActionsLayout {
-  desktop,
-  mobile,
-}
+enum TaskRowActionsLayout { desktop, mobile }
 
 class TaskRowActions extends StatelessWidget {
   const TaskRowActions({
@@ -37,25 +34,25 @@ class TaskRowActions extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (layout) {
       TaskRowActionsLayout.desktop => _TaskDesktopActions(
-          task: task,
-          canOpenWizard: _canOpenWizard,
-          canComplete: _canComplete,
-          onEdit: onEdit,
-          onDelete: onDelete,
-          onWizard: onWizard,
-          onComplete: onComplete,
-          isBusy: isBusy,
-        ),
+        task: task,
+        canOpenWizard: _canOpenWizard,
+        canComplete: _canComplete,
+        onEdit: onEdit,
+        onDelete: onDelete,
+        onWizard: onWizard,
+        onComplete: onComplete,
+        isBusy: isBusy,
+      ),
       TaskRowActionsLayout.mobile => _TaskMobileActions(
-          task: task,
-          canOpenWizard: _canOpenWizard,
-          canComplete: _canComplete,
-          onEdit: onEdit,
-          onDelete: onDelete,
-          onWizard: onWizard,
-          onComplete: onComplete,
-          isBusy: isBusy,
-        ),
+        task: task,
+        canOpenWizard: _canOpenWizard,
+        canComplete: _canComplete,
+        onEdit: onEdit,
+        onDelete: onDelete,
+        onWizard: onWizard,
+        onComplete: onComplete,
+        isBusy: isBusy,
+      ),
     };
   }
 }

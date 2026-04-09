@@ -24,7 +24,9 @@ class LayoutPageContainer extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final wide = constraints.maxWidth >= 900;
-        final h = wide ? LayoutConstants.widePaddingH : LayoutConstants.narrowPaddingH;
+        final h = wide
+            ? LayoutConstants.widePaddingH
+            : LayoutConstants.narrowPaddingH;
         return Align(
           alignment: Alignment.topCenter,
           child: ConstrainedBox(
@@ -166,7 +168,11 @@ class LayoutTimePill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.schedule, size: ds.icons.sm, color: ds.colors.feedbackWarning),
+          Icon(
+            Icons.schedule,
+            size: ds.icons.sm,
+            color: ds.colors.feedbackWarning,
+          ),
           SizedBox(width: ds.spacing.sm),
           Flexible(
             child: Text(
@@ -197,7 +203,6 @@ class LayoutTaskCardRow extends StatelessWidget {
     this.onOpenGuide,
     this.showCheckbox = true,
     this.completedLook = false,
-    this.showActions = true,
   });
 
   final String title;
@@ -209,7 +214,6 @@ class LayoutTaskCardRow extends StatelessWidget {
   final VoidCallback? onOpenGuide;
   final bool showCheckbox;
   final bool completedLook;
-  final bool showActions;
 
   @override
   Widget build(BuildContext context) {
@@ -239,17 +243,6 @@ class LayoutTaskCardRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (showCheckbox) ...[
-              Padding(
-                padding: EdgeInsets.only(top: ds.spacing.xs),
-                child: Icon(
-                  completedLook ? Icons.check_circle : Icons.circle_outlined,
-                  color: completedLook ? ds.colors.primary : ds.colors.primary,
-                  size: ds.icons.lg * 1.25,
-                ),
-              ),
-              SizedBox(width: ds.spacing.md),
-            ],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -260,7 +253,11 @@ class LayoutTaskCardRow extends StatelessWidget {
                       if (categoryIcon != null) ...[
                         Padding(
                           padding: EdgeInsets.only(top: ds.spacing.xs / 2),
-                          child: Icon(categoryIcon, size: ds.icons.sm, color: ds.colors.primary),
+                          child: Icon(
+                            categoryIcon,
+                            size: ds.icons.sm,
+                            color: ds.colors.primary,
+                          ),
                         ),
                         SizedBox(width: ds.spacing.xs),
                       ],
@@ -295,26 +292,6 @@ class LayoutTaskCardRow extends StatelessWidget {
                 ],
               ),
             ),
-            if (showActions)
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (onOpenGuide != null)
-                    IconButton(
-                      onPressed: onOpenGuide,
-                      tooltip: 'Guia',
-                      icon: Icon(Icons.route, size: ds.icons.md, color: ds.colors.primary),
-                    ),
-                  IconButton(
-                    onPressed: onEdit,
-                    icon: Icon(Icons.edit_outlined, size: ds.icons.md, color: ds.colors.textSecondary),
-                  ),
-                  IconButton(
-                    onPressed: onDelete,
-                    icon: Icon(Icons.delete_outline, size: ds.icons.md, color: ds.colors.feedbackDanger),
-                  ),
-                ],
-              ),
           ],
         ),
       ),

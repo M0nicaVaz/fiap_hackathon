@@ -1,20 +1,19 @@
 import 'package:fiap_hackathon/app/navigation/app_routes.dart';
 import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
 import 'package:fiap_hackathon/core/design_system/widgets/ds_button/ds_button.dart';
+import 'package:fiap_hackathon/features/auth/presentation/providers/auth_session_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/auth_session_controller.dart';
-
-class AuthPage extends StatefulWidget {
-  const AuthPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<AuthPage> createState() => _AuthPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _AuthPageState extends State<AuthPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passwordFocus = FocusNode();
@@ -35,13 +34,12 @@ class _AuthPageState extends State<AuthPage> {
       _errorMessage = null;
     });
     final provider = context.read<AuthSessionStateProvider>();
-
-    await provider.enter(
+    await provider.register(
       email: _emailController.text.trim(),
       password: _passwordController.text,
     );
-
     if (!mounted) return;
+
     setState(() {
       _loading = false;
       _errorMessage = context.read<AuthSessionStateProvider>().errorMessage;
@@ -55,7 +53,6 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Center(
@@ -68,7 +65,7 @@ class _AuthPageState extends State<AuthPage> {
                 SizedBox(height: ds.spacing.lg),
                 ExcludeSemantics(
                   child: Image.asset(
-                    'assets/images/landing.png',
+                    'assets/images/create_account.png',
                     height: 300,
                     width: 300,
                     fit: BoxFit.contain,
@@ -80,7 +77,7 @@ class _AuthPageState extends State<AuthPage> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Bem-vindo ao SeniorEase',
+                    'Criar conta',
                     style: ds.typography.display.copyWith(
                       color: ds.colors.primary,
                     ),
@@ -90,7 +87,7 @@ class _AuthPageState extends State<AuthPage> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Sua vida organizada de forma simples e acessível.',
+                    'Junte-se à nossa comunidade para ter tranquilidade e organizar seu dia com mais facilidade.',
                   ),
                 ),
                 SizedBox(height: ds.spacing.xl),
@@ -132,19 +129,16 @@ class _AuthPageState extends State<AuthPage> {
                   ],
                 ),
                 DSButton(
-                  label: 'Entrar',
-                  variant: DSButtonVariant.primary,
+                  label: "Criar conta",
                   onPressed: _submit,
                   loading: _loading,
                   fullWidth: true,
                 ),
                 const SizedBox(height: 16),
                 DSButton(
-                  label: "Criar conta",
+                  label: "Já tenho conta",
                   variant: DSButtonVariant.secondary,
-                  onPressed: () {
-                    context.go(AppRoutes.register);
-                  },
+                  onPressed: () => context.go(AppRoutes.auth),
                   fullWidth: true,
                 ),
               ],
