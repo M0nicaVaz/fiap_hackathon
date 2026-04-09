@@ -17,4 +17,5 @@ abstract interface class TasksRepository {
   Future<void> delete(String id);
   Future<ActivityHistoryEntry> completeTask(String id);
   Future<Task> saveProgress(Task task);
+  Future<void> refreshTasks();
 }

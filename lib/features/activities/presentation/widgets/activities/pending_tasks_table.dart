@@ -71,17 +71,12 @@ class PendingTasksTable extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    top: ds.spacing.xs / 2,
-                                  ),
-                                  child: Icon(
-                                    taskCategoryIcon(task.category),
-                                    size: ds.icons.sm,
-                                    color: ds.colors.primary,
-                                  ),
+                                Icon(
+                                  taskCategoryIcon(task.category),
+                                  size: ds.icons.sm,
+                                  color: ds.colors.primary,
                                 ),
                                 SizedBox(width: ds.spacing.xs),
                                 Expanded(

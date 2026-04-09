@@ -33,7 +33,7 @@ class CustomizationPage extends StatelessWidget {
                       title: 'Tamanho da Fonte',
                       value: controller.fontScale,
                       min: 0.8,
-                      max: 2.0,
+                      max: 1.5,
                       onChanged: controller.setFontScale,
                       icon: Icons.format_size,
                     ),

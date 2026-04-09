@@ -16,7 +16,6 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
   final SupabaseClient _client;
   final _random = Random();
 
-  StreamSubscription<List<Map<String, dynamic>>>? _realtimeSub;
   final _controller = StreamController<List<Task>>.broadcast();
 
   String? get _userId => _client.auth.currentUser?.id;
@@ -42,24 +41,7 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
     return completer.future;
   }
 
-  Future<void> _init() async {
-    try {
-      final uid = await _requireUserId();
-      _realtimeSub = _client
-          .from('tasks')
-          .stream(primaryKey: ['id'])
-          .eq('user_id', uid)
-          .order('created_at')
-          .listen(
-            (rows) => _controller.add(
-              rows.map((r) => TaskPersistenceMapper.taskFromMap(_rowToMap(r))).toList(),
-            ),
-            onError: (_) => _controller.add([]),
-          );
-    } catch (_) {
-      _controller.add([]);
-    }
-  }
+  Future<void> _init() async {}
 
   @override
   Stream<List<Task>> get tasksStream => _controller.stream;
@@ -78,7 +60,9 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
         .select()
         .eq('user_id', uid)
         .order('created_at');
-    return rows.map((r) => TaskPersistenceMapper.taskFromMap(_rowToMap(r))).toList();
+    return rows
+        .map((r) => TaskPersistenceMapper.taskFromMap(_rowToMap(r)))
+        .toList();
   }
 
   @override
@@ -91,9 +75,11 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
         .eq('user_id', uid)
         .not('id', 'in', currentIds.isEmpty ? [''] : currentIds);
     if (tasks.isNotEmpty) {
-      await _client.from('tasks').upsert(tasks.map((t) => _taskToRow(t, uid)).toList());
+      await _client
+          .from('tasks')
+          .upsert(tasks.map((t) => _taskToRow(t, uid)).toList());
     }
-    // O stream Realtime emitirá automaticamente — não precisa emitir manualmente
+    _controller.add(tasks);
   }
 
   @override
@@ -104,7 +90,11 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
         .select()
         .eq('user_id', uid)
         .order('completed_at', ascending: false);
-    return rows.map((r) => TaskPersistenceMapper.historyEntryFromMap(_historyRowToMap(r))).toList();
+    return rows
+        .map(
+          (r) => TaskPersistenceMapper.historyEntryFromMap(_historyRowToMap(r)),
+        )
+        .toList();
   }
 
   @override
@@ -112,59 +102,59 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
     final uid = await _requireUserId();
     await _client.from('activity_history').delete().eq('user_id', uid);
     if (entries.isNotEmpty) {
-      await _client.from('activity_history').insert(
-        entries.map((e) => _historyToRow(e, uid)).toList(),
-      );
+      await _client
+          .from('activity_history')
+          .insert(entries.map((e) => _historyToRow(e, uid)).toList());
     }
   }
 
   @override
-  String newId() => '${DateTime.now().microsecondsSinceEpoch}_${_random.nextInt(0x7fffffff)}';
+  String newId() =>
+      '${DateTime.now().microsecondsSinceEpoch}_${_random.nextInt(0x7fffffff)}';
 
   Map<String, dynamic> _taskToRow(Task t, String uid) => {
-        'id': t.id,
-        'user_id': uid,
-        'title': t.title,
-        'description': t.description,
-        'steps': t.steps.map(TaskPersistenceMapper.stepToMap).toList(),
-        'status': t.status.index,
-        'category': t.category.index,
-        'reminder_at': t.reminderAt?.toUtc().toIso8601String(),
-        'created_at': t.createdAt.toUtc().toIso8601String(),
-        'updated_at': t.updatedAt.toUtc().toIso8601String(),
-      };
+    'id': t.id,
+    'user_id': uid,
+    'title': t.title,
+    'description': t.description,
+    'steps': t.steps.map(TaskPersistenceMapper.stepToMap).toList(),
+    'status': t.status.index,
+    'category': t.category.index,
+    'reminder_at': t.reminderAt?.toUtc().toIso8601String(),
+    'created_at': t.createdAt.toUtc().toIso8601String(),
+    'updated_at': t.updatedAt.toUtc().toIso8601String(),
+  };
 
   Map<String, dynamic> _rowToMap(Map<String, dynamic> r) => {
-        'id': r['id'],
-        'title': r['title'],
-        'description': r['description'],
-        'steps': r['steps'],
-        'status': r['status'],
-        'category': r['category'],
-        'reminderAt': r['reminder_at'],
-        'createdAt': r['created_at'],
-        'updatedAt': r['updated_at'],
-      };
+    'id': r['id'],
+    'title': r['title'],
+    'description': r['description'],
+    'steps': r['steps'],
+    'status': r['status'],
+    'category': r['category'],
+    'reminderAt': r['reminder_at'],
+    'createdAt': r['created_at'],
+    'updatedAt': r['updated_at'],
+  };
 
   Map<String, dynamic> _historyToRow(ActivityHistoryEntry e, String uid) => {
-        'id': e.id,
-        'user_id': uid,
-        'task_id': e.taskId,
-        'task_title': e.taskTitle,
-        'completed_at': e.completedAt.toUtc().toIso8601String(),
-        'positive_message': e.positiveMessage,
-      };
+    'id': e.id,
+    'user_id': uid,
+    'task_id': e.taskId,
+    'task_title': e.taskTitle,
+    'completed_at': e.completedAt.toUtc().toIso8601String(),
+    'positive_message': e.positiveMessage,
+  };
 
   Map<String, dynamic> _historyRowToMap(Map<String, dynamic> r) => {
-        'id': r['id'],
-        'taskId': r['task_id'],
-        'taskTitle': r['task_title'],
-        'completedAt': r['completed_at'],
-        'positiveMessage': r['positive_message'],
-      };
+    'id': r['id'],
+    'taskId': r['task_id'],
+    'taskTitle': r['task_title'],
+    'completedAt': r['completed_at'],
+    'positiveMessage': r['positive_message'],
+  };
 
   void dispose() {
-    _realtimeSub?.cancel();
     _controller.close();
   }
 }

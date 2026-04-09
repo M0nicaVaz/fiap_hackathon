@@ -23,6 +23,7 @@ import '../../features/activities/domain/usecases/get_activity_history_use_case.
 import '../../features/activities/domain/usecases/save_task_progress_use_case.dart';
 import '../../features/activities/domain/usecases/update_task_use_case.dart';
 import '../../features/activities/domain/usecases/watch_tasks_use_case.dart';
+import '../../features/activities/domain/usecases/refresh_tasks_use_case.dart';
 import '../../features/activities/presentation/providers/tasks_controller.dart';
 import '../../features/auth/data/repositories/supabase_auth_repository.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
@@ -141,6 +142,7 @@ abstract final class ContainerRegistry {
       ..registerLazySingleton(() => CompleteTaskUseCase(_getIt()))
       ..registerLazySingleton(() => GetActivityHistoryUseCase(_getIt()))
       ..registerLazySingleton(() => SaveTaskProgressUseCase(_getIt()))
+      ..registerLazySingleton(() => RefreshTasksUseCase(_getIt()))
       ..registerLazySingleton(
         () => TasksController(
           watchTasksUseCase: _getIt(),
@@ -150,6 +152,7 @@ abstract final class ContainerRegistry {
           completeTaskUseCase: _getIt(),
           getActivityHistoryUseCase: _getIt(),
           saveTaskProgressUseCase: _getIt(),
+          refreshTasksUseCase: _getIt(),
         ),
       );
   }

@@ -11,6 +11,7 @@ import '../../domain/usecases/get_activity_history_use_case.dart';
 import '../../domain/usecases/save_task_progress_use_case.dart';
 import '../../domain/usecases/update_task_use_case.dart';
 import '../../domain/usecases/watch_tasks_use_case.dart';
+import '../../domain/usecases/refresh_tasks_use_case.dart';
 
 class TasksController extends ChangeNotifier {
   TasksController({
@@ -21,18 +22,21 @@ class TasksController extends ChangeNotifier {
     required CompleteTaskUseCase completeTaskUseCase,
     required GetActivityHistoryUseCase getActivityHistoryUseCase,
     required SaveTaskProgressUseCase saveTaskProgressUseCase,
-  })  : _watchTasksUseCase = watchTasksUseCase,
-        _createTaskUseCase = createTaskUseCase,
-        _updateTaskUseCase = updateTaskUseCase,
-        _deleteTaskUseCase = deleteTaskUseCase,
-        _completeTaskUseCase = completeTaskUseCase,
-        _getActivityHistoryUseCase = getActivityHistoryUseCase,
-        _saveTaskProgressUseCase = saveTaskProgressUseCase {
+    required RefreshTasksUseCase refreshTasksUseCase,
+  }) : _watchTasksUseCase = watchTasksUseCase,
+       _createTaskUseCase = createTaskUseCase,
+       _updateTaskUseCase = updateTaskUseCase,
+       _deleteTaskUseCase = deleteTaskUseCase,
+       _completeTaskUseCase = completeTaskUseCase,
+       _getActivityHistoryUseCase = getActivityHistoryUseCase,
+       _saveTaskProgressUseCase = saveTaskProgressUseCase,
+       _refreshTasksUseCase = refreshTasksUseCase {
     _subscription = _watchTasksUseCase().listen((list) {
       _tasks = list;
       _tasksView = UnmodifiableListView(_tasks);
       notifyListeners();
     });
+    refreshTasks();
   }
 
   final WatchTasksUseCase _watchTasksUseCase;
@@ -42,6 +46,7 @@ class TasksController extends ChangeNotifier {
   final CompleteTaskUseCase _completeTaskUseCase;
   final GetActivityHistoryUseCase _getActivityHistoryUseCase;
   final SaveTaskProgressUseCase _saveTaskProgressUseCase;
+  final RefreshTasksUseCase _refreshTasksUseCase;
   StreamSubscription<List<Task>>? _subscription;
   List<Task> _tasks = [];
   List<ActivityHistoryEntry> _history = [];
@@ -101,6 +106,10 @@ class TasksController extends ChangeNotifier {
   Future<ActivityHistoryEntry> completeTask(String id) =>
       _completeTaskUseCase(id);
   Future<Task> saveProgress(Task task) => _saveTaskProgressUseCase(task);
+
+  Future<void> refreshTasks() async {
+    await _refreshTasksUseCase();
+  }
 
   @override
   void dispose() {
