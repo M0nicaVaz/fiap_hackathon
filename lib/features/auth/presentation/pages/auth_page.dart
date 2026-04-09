@@ -147,6 +147,15 @@ class _AuthPageState extends State<AuthPage> {
                   },
                   fullWidth: true,
                 ),
+                const SizedBox(height: 16),
+                DSButton(
+                  label: 'Entrar com Google',
+                  variant: DSButtonVariant.ghost,
+                  onPressed: _loading
+                      ? null
+                      : () => context.read<AuthSessionStateProvider>().enterWithGoogle(),
+                  fullWidth: true,
+                ),
               ],
             ),
           ),
