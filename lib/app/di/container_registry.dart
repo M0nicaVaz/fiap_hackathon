@@ -13,6 +13,7 @@ import '../../features/accessibility_preferences/domain/usecases/save_accessibil
 import '../../features/accessibility_preferences/domain/usecases/sync_accessibility_settings_use_case.dart';
 import '../../features/accessibility_preferences/presentation/providers/accessibility_preferences_controller.dart';
 import '../../features/activities/data/datasources/shared_preferences_tasks_local_data_source.dart';
+import '../../features/activities/data/datasources/supabase_tasks_data_source.dart';
 import '../../features/activities/data/datasources/tasks_local_data_source.dart';
 import '../../features/activities/data/repositories/tasks_repository_impl.dart';
 import '../../features/activities/domain/repositories/tasks_repository.dart';
@@ -128,9 +129,13 @@ abstract final class ContainerRegistry {
           watchAuthStateUseCase: _getIt(),
         ),
       )
-      ..registerLazySingleton<TasksLocalDataSource>(
-        () => SharedPreferencesTasksLocalDataSource(_getIt()),
-      )
+      ..registerLazySingleton<TasksLocalDataSource>(() {
+        final uid = Supabase.instance.client.auth.currentUser?.id;
+        if (uid != null) {
+          return SupabaseTasksDataSource(_getIt(), uid);
+        }
+        return SharedPreferencesTasksLocalDataSource(_getIt());
+      })
       ..registerLazySingleton<TasksRepository>(
         () => TasksRepositoryImpl(_getIt()),
       )
