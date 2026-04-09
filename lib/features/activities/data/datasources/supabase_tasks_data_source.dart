@@ -9,13 +9,38 @@ import '../mappers/task_persistence_mapper.dart';
 import 'tasks_local_data_source.dart';
 
 class SupabaseTasksDataSource implements TasksLocalDataSource {
-  SupabaseTasksDataSource(this._client, this._userId);
+  SupabaseTasksDataSource(this._client) {
+    loadTasks().then(_controller.add).catchError((_) => _controller.add([]));
+  }
 
   final SupabaseClient _client;
-  final String _userId;
 
   final _controller = StreamController<List<Task>>.broadcast();
   final _random = Random();
+
+  String? get _userId => _client.auth.currentUser?.id;
+
+  Future<String> _requireUserId() async {
+    final id = _userId;
+    if (id != null) return id;
+    // Aguarda até 5s pela sessão ser restaurada
+    final completer = Completer<String>();
+    late StreamSubscription sub;
+    sub = _client.auth.onAuthStateChange.listen((event) {
+      final uid = event.session?.user.id;
+      if (uid != null && !completer.isCompleted) {
+        completer.complete(uid);
+        sub.cancel();
+      }
+    });
+    Future.delayed(const Duration(seconds: 5), () {
+      if (!completer.isCompleted) {
+        completer.completeError('Usuário não autenticado');
+        sub.cancel();
+      }
+    });
+    return completer.future;
+  }
 
   @override
   Stream<List<Task>> get tasksStream => _controller.stream;
@@ -28,40 +53,46 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
 
   @override
   Future<List<Task>> loadTasks() async {
+    final uid = await _requireUserId();
     final rows = await _client
         .from('tasks')
         .select()
-        .eq('user_id', _userId)
+        .eq('user_id', uid)
         .order('created_at');
     return rows.map((r) => TaskPersistenceMapper.taskFromMap(_rowToMap(r))).toList();
   }
 
   @override
   Future<void> saveTasks(List<Task> tasks) async {
-    final rows = tasks.map((t) => _taskToRow(t)).toList();
-    await _client.from('tasks').delete().eq('user_id', _userId);
-    if (rows.isNotEmpty) {
-      await _client.from('tasks').insert(rows);
+    final uid = await _requireUserId();
+    final currentIds = tasks.map((t) => t.id).toList();
+    // Remove tarefas deletadas
+    await _client.from('tasks').delete().eq('user_id', uid).not('id', 'in', currentIds.isEmpty ? [''] : currentIds);
+    // Upsert tarefas existentes/novas
+    if (tasks.isNotEmpty) {
+      await _client.from('tasks').upsert(tasks.map((t) => _taskToRow(t, uid)).toList());
     }
     _controller.add(tasks);
   }
 
   @override
   Future<List<ActivityHistoryEntry>> loadHistory() async {
+    final uid = await _requireUserId();
     final rows = await _client
         .from('activity_history')
         .select()
-        .eq('user_id', _userId)
+        .eq('user_id', uid)
         .order('completed_at', ascending: false);
     return rows.map((r) => TaskPersistenceMapper.historyEntryFromMap(_historyRowToMap(r))).toList();
   }
 
   @override
   Future<void> saveHistory(List<ActivityHistoryEntry> entries) async {
-    await _client.from('activity_history').delete().eq('user_id', _userId);
+    final uid = await _requireUserId();
+    await _client.from('activity_history').delete().eq('user_id', uid);
     if (entries.isNotEmpty) {
       await _client.from('activity_history').insert(
-        entries.map((e) => _historyToRow(e)).toList(),
+        entries.map((e) => _historyToRow(e, uid)).toList(),
       );
     }
   }
@@ -69,9 +100,9 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
   @override
   String newId() => '${DateTime.now().microsecondsSinceEpoch}_${_random.nextInt(0x7fffffff)}';
 
-  Map<String, dynamic> _taskToRow(Task t) => {
+  Map<String, dynamic> _taskToRow(Task t, String uid) => {
         'id': t.id,
-        'user_id': _userId,
+        'user_id': uid,
         'title': t.title,
         'description': t.description,
         'steps': t.steps.map(TaskPersistenceMapper.stepToMap).toList(),
@@ -94,9 +125,9 @@ class SupabaseTasksDataSource implements TasksLocalDataSource {
         'updatedAt': r['updated_at'],
       };
 
-  Map<String, dynamic> _historyToRow(ActivityHistoryEntry e) => {
+  Map<String, dynamic> _historyToRow(ActivityHistoryEntry e, String uid) => {
         'id': e.id,
-        'user_id': _userId,
+        'user_id': uid,
         'task_id': e.taskId,
         'task_title': e.taskTitle,
         'completed_at': e.completedAt.toUtc().toIso8601String(),

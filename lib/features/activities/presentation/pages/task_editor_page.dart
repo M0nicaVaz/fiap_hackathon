@@ -98,13 +98,14 @@ class _TaskEditorPageState extends State<TaskEditorPage> {
   }
 
   DateTime? get _combinedReminder {
-    if (_reminderDate == null || _reminderTime == null) return null;
+    if (_reminderDate == null) return null;
+    final time = _reminderTime ?? const TimeOfDay(hour: 0, minute: 0);
     return DateTime(
       _reminderDate!.year,
       _reminderDate!.month,
       _reminderDate!.day,
-      _reminderTime!.hour,
-      _reminderTime!.minute,
+      time.hour,
+      time.minute,
     );
   }
 
