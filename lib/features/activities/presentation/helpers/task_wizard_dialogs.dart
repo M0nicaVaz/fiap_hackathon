@@ -1,4 +1,5 @@
 import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
+import 'package:fiap_hackathon/core/design_system/widgets/ds_button/ds_button.dart';
 import 'package:flutter/material.dart';
 
 Future<bool> showTaskWizardCompleteDialog(BuildContext context) async {
@@ -7,22 +8,20 @@ Future<bool> showTaskWizardCompleteDialog(BuildContext context) async {
     context: context,
     builder: (dialogContext) => AlertDialog(
       backgroundColor: ds.colors.surface,
-      title: Text(
-        'Concluir atividade?',
-        style: ds.typography.headingMedium,
-      ),
+      title: Text('Concluir atividade?', style: ds.typography.headingMedium),
       content: Text(
         'O histórico guardará uma mensagem informativa de conclusão.',
         style: ds.typography.bodyMedium,
       ),
       actions: [
-        TextButton(
+        DSButton(
           onPressed: () => Navigator.pop(dialogContext, false),
-          child: Text('Cancelar', style: ds.typography.label),
+          label: "Cancelar",
+          variant: DSButtonVariant.danger,
         ),
-        TextButton(
+        DSButton(
           onPressed: () => Navigator.pop(dialogContext, true),
-          child: Text('Confirmar', style: ds.typography.label),
+          label: "Confirmar",
         ),
       ],
     ),

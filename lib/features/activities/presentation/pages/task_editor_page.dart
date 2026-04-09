@@ -6,7 +6,6 @@ import 'package:fiap_hackathon/features/activities/presentation/providers/tasks_
 import 'package:fiap_hackathon/features/activities/presentation/widgets/task_editor/reminder_fields_section.dart';
 import 'package:fiap_hackathon/features/activities/presentation/widgets/task_editor/task_category_section.dart';
 import 'package:fiap_hackathon/features/activities/presentation/widgets/task_editor/task_editor_footer_actions.dart';
-import 'package:fiap_hackathon/features/activities/presentation/widgets/task_editor/task_editor_header.dart';
 import 'package:fiap_hackathon/features/activities/presentation/widgets/task_editor/task_editor_hero_card.dart';
 import 'package:fiap_hackathon/features/activities/presentation/widgets/task_editor/task_notes_section.dart';
 import 'package:fiap_hackathon/features/activities/presentation/widgets/task_editor/task_steps_section.dart';
@@ -167,7 +166,6 @@ class _TaskEditorPageState extends State<TaskEditorPage> {
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    final title = _isEditing ? 'Editar atividade' : 'Nova atividade';
 
     return Scaffold(
       backgroundColor: ds.colors.background,
@@ -175,10 +173,6 @@ class _TaskEditorPageState extends State<TaskEditorPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TaskEditorHeader(
-              title: title,
-              onBack: _isSaving ? null : () => Navigator.of(context).maybePop(),
-            ),
             Expanded(
               child: LayoutBuilder(
                 builder: (context, c) {
@@ -193,6 +187,7 @@ class _TaskEditorPageState extends State<TaskEditorPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
+                              SizedBox(height: ds.spacing.xl),
                               TaskEditorHeroCard(isEditing: _isEditing),
                               SizedBox(height: ds.spacing.xl),
                               TaskTitleSection(controller: _titleController),
@@ -211,7 +206,9 @@ class _TaskEditorPageState extends State<TaskEditorPage> {
                                 placeholderTime: _placeholderTime,
                               ),
                               SizedBox(height: ds.spacing.xl),
-                              TaskNotesSection(controller: _descriptionController),
+                              TaskNotesSection(
+                                controller: _descriptionController,
+                              ),
                               SizedBox(height: ds.spacing.lg),
                               TaskStepsSection(
                                 expanded: _stepsExpanded,
@@ -221,7 +218,9 @@ class _TaskEditorPageState extends State<TaskEditorPage> {
                                 ),
                                 onAddStep: () {
                                   setState(() {
-                                    _stepControllers.add(TextEditingController());
+                                    _stepControllers.add(
+                                      TextEditingController(),
+                                    );
                                     _stepsExpanded = true;
                                   });
                                 },
@@ -241,7 +240,9 @@ class _TaskEditorPageState extends State<TaskEditorPage> {
               ),
             ),
             TaskEditorFooterActions(
-              onCancel: _isSaving ? null : () => Navigator.of(context).maybePop(),
+              onCancel: _isSaving
+                  ? null
+                  : () => Navigator.of(context).maybePop(),
               onSave: _isSaving ? null : _save,
               isSaving: _isSaving,
             ),

@@ -1,4 +1,5 @@
 import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
+import 'package:fiap_hackathon/core/design_system/widgets/ds_button/ds_button.dart';
 import 'package:flutter/material.dart';
 
 Future<bool> showDeleteActivityDialog(BuildContext context) async {
@@ -8,27 +9,20 @@ Future<bool> showDeleteActivityDialog(BuildContext context) async {
     builder: (dialogContext) {
       return AlertDialog(
         backgroundColor: ds.colors.surface,
-        title: Text(
-          'Excluir atividade?',
-          style: ds.typography.headingMedium,
-        ),
+        title: Text('Excluir atividade?', style: ds.typography.headingMedium),
         content: Text(
           'Esta ação não pode ser desfeita.',
           style: ds.typography.bodyMedium,
         ),
         actions: [
-          TextButton(
+          DSButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text('Cancelar', style: ds.typography.label),
+            label: "Cancelar",
           ),
-          TextButton(
+          DSButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(
-              'Excluir',
-              style: ds.typography.label.copyWith(
-                color: ds.colors.feedbackDanger,
-              ),
-            ),
+            label: "Excluir",
+            variant: DSButtonVariant.danger,
           ),
         ],
       );
@@ -44,22 +38,20 @@ Future<bool> showOpenWizardDialog(BuildContext context) async {
     builder: (dialogContext) {
       return AlertDialog(
         backgroundColor: ds.colors.surface,
-        title: Text(
-          'Abrir assistente?',
-          style: ds.typography.headingMedium,
-        ),
+        title: Text('Abrir assistente?', style: ds.typography.headingMedium),
         content: Text(
           'As etapas desta atividade serão mostradas uma a uma.',
           style: ds.typography.bodyMedium,
         ),
         actions: [
-          TextButton(
+          DSButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text('Cancelar', style: ds.typography.label),
+            label: "Cancelar",
+            variant: DSButtonVariant.danger,
           ),
-          TextButton(
+          DSButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text('Abrir', style: ds.typography.label),
+            label: "Abrir",
           ),
         ],
       );
@@ -75,22 +67,20 @@ Future<bool> showCompleteActivityDialog(BuildContext context) async {
     builder: (dialogContext) {
       return AlertDialog(
         backgroundColor: ds.colors.surface,
-        title: Text(
-          'Concluir atividade?',
-          style: ds.typography.headingMedium,
-        ),
+        title: Text('Concluir atividade?', style: ds.typography.headingMedium),
         content: Text(
           'Esta atividade será registrada como concluída e movida para o histórico.',
           style: ds.typography.bodyMedium,
         ),
         actions: [
-          TextButton(
+          DSButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text('Cancelar', style: ds.typography.label),
+            label: "Cancelar",
+            variant: DSButtonVariant.danger,
           ),
-          TextButton(
+          DSButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text('Concluir', style: ds.typography.label),
+            label: "Concluir",
           ),
         ],
       );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/pages/register_page.dart';
 import 'custom_page.dart';
 import '../../features/accessibility_preferences/presentation/pages/customization_page.dart';
 import '../../features/activities/presentation/pages/activities_page.dart';
@@ -40,6 +41,12 @@ class AppRouter {
         name: AppRouteNames.profile,
         pageBuilder: (context, state) =>
             customPage<void>(key: state.pageKey, child: const ProfilePage()),
+      ),
+      GoRoute(
+        path: AppRoutes.register,
+        name: AppRouteNames.register,
+        pageBuilder: (context, state) =>
+            customPage<void>(key: state.pageKey, child: const RegisterPage()),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -91,12 +98,13 @@ class AppRouter {
     final location = state.matchedLocation;
     final isAtSplash = location == AppRoutes.splash;
     final isAtAuth = location == AppRoutes.auth;
+    final isAtRegister = location == AppRoutes.register;
 
     switch (_authSessionProvider.status) {
       case AuthSessionStatus.unknown:
         return isAtSplash ? null : AppRoutes.splash;
       case AuthSessionStatus.unauthenticated:
-        if (!isAtAuth) {
+        if (!isAtAuth && !isAtRegister) {
           final from = Uri.encodeComponent(state.uri.toString());
           return '${AppRoutes.auth}?from=$from';
         }

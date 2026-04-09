@@ -42,7 +42,6 @@ class CompletedTasksSection extends StatelessWidget {
           timeLabel: formatDate(entry.completedAt),
           showCheckbox: true,
           completedLook: true,
-          showActions: false,
           onEdit: () {},
           onDelete: () {},
           onOpenGuide: null,
