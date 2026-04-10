@@ -153,6 +153,8 @@ abstract final class ContainerRegistry {
           getActivityHistoryUseCase: _getIt(),
           saveTaskProgressUseCase: _getIt(),
           refreshTasksUseCase: _getIt(),
+          getCurrentUserUseCase: _getIt(),
+          watchAuthStateUseCase: _getIt(),
         ),
       );
   }
