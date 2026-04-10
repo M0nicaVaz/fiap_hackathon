@@ -1,11 +1,33 @@
 import 'package:fiap_hackathon/app/navigation/app_routes.dart';
-import 'package:fiap_hackathon/core/design_system/provider/design_system_provider.dart';
-import 'package:fiap_hackathon/core/design_system/widgets/ds_button/ds_button.dart';
+import 'package:fiap_hackathon/features/auth/presentation/widgets/auth_page_mobile.dart';
+import 'package:fiap_hackathon/features/auth/presentation/widgets/auth_page_web.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_session_controller.dart';
+
+class AuthPageProps {
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final FocusNode passwordFocus;
+  final bool loading;
+  final String? errorMessage;
+  final VoidCallback onSubmit;
+  final VoidCallback onRegister;
+  final VoidCallback onGoogleSignIn;
+
+  const AuthPageProps({
+    required this.emailController,
+    required this.passwordController,
+    required this.passwordFocus,
+    required this.loading,
+    required this.errorMessage,
+    required this.onSubmit,
+    required this.onRegister,
+    required this.onGoogleSignIn,
+  });
+}
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -54,113 +76,25 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   Widget build(BuildContext context) {
-    final ds = context.ds;
+    final props = AuthPageProps(
+      emailController: _emailController,
+      passwordController: _passwordController,
+      passwordFocus: _passwordFocus,
+      loading: _loading,
+      errorMessage: _errorMessage,
+      onSubmit: _submit,
+      onRegister: () => context.go(AppRoutes.register),
+      onGoogleSignIn: () =>
+          context.read<AuthSessionStateProvider>().enterWithGoogle(),
+    );
 
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(ds.spacing.lg),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(height: ds.spacing.lg),
-                ExcludeSemantics(
-                  child: Image.asset(
-                    'assets/images/landing.png',
-                    height: 300,
-                    width: 300,
-                    fit: BoxFit.contain,
-                    cacheHeight: 300,
-                    cacheWidth: 300,
-                  ),
-                ),
-                SizedBox(height: ds.spacing.lg),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Bem-vindo ao SeniorEase',
-                    style: ds.typography.display.copyWith(
-                      color: ds.colors.primary,
-                    ),
-                  ),
-                ),
-                SizedBox(height: ds.spacing.sm),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Sua vida organizada de forma simples e acessível.',
-                  ),
-                ),
-                SizedBox(height: ds.spacing.xl),
-                Column(
-                  children: [
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
-                      onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
-                      decoration: const InputDecoration(
-                        label: Text('Insira seu e-mail'),
-                      ),
-                    ),
-                    SizedBox(height: ds.spacing.md),
-                    TextFormField(
-                      controller: _passwordController,
-                      focusNode: _passwordFocus,
-                      obscureText: true,
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (_) {
-                        if (!_loading) _submit();
-                      },
-                      decoration: const InputDecoration(
-                        label: Text('Insira sua senha'),
-                      ),
-                    ),
-                    if (_errorMessage != null) ...[
-                      SizedBox(height: ds.spacing.sm),
-                      Text(
-                        _errorMessage!,
-                        style: ds.typography.bodyMedium.copyWith(
-                          color: ds.colors.feedbackDanger,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                    SizedBox(height: ds.spacing.md),
-                  ],
-                ),
-                DSButton(
-                  label: 'Entrar',
-                  variant: DSButtonVariant.primary,
-                  onPressed: _submit,
-                  loading: _loading,
-                  fullWidth: true,
-                ),
-                const SizedBox(height: 16),
-                DSButton(
-                  label: "Criar conta",
-                  variant: DSButtonVariant.secondary,
-                  onPressed: () {
-                    context.go(AppRoutes.register);
-                  },
-                  fullWidth: true,
-                ),
-                const SizedBox(height: 16),
-                DSButton(
-                  label: 'Entrar com Google',
-                  variant: DSButtonVariant.ghost,
-                  onPressed: _loading
-                      ? null
-                      : () => context.read<AuthSessionStateProvider>().enterWithGoogle(),
-                  fullWidth: true,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= 768) {
+          return AuthPageWeb(props: props);
+        }
+        return AuthPageMobile(props: props);
+      },
     );
   }
 }

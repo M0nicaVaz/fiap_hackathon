@@ -84,8 +84,9 @@ class FakeTasksRepository implements TasksRepository {
       taskId: task.id,
       taskTitle: task.title,
       completedAt: DateTime.now(),
-      positiveMessage:
-          CompletionFeedbackMessages.forHistoryIndex(history.length),
+      positiveMessage: CompletionFeedbackMessages.forHistoryIndex(
+        history.length,
+      ),
     );
     history.insert(0, entry);
     return entry;
@@ -104,5 +105,11 @@ class FakeTasksRepository implements TasksRepository {
     }
     tasks[i] = next;
     return next;
+  }
+
+  @override
+  Future<void> refreshTasks() {
+    // TODO: implement refreshTasks
+    throw UnimplementedError();
   }
 }

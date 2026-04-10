@@ -82,6 +82,7 @@ flutter:
   assets:
     - assets/images/landing.png
     - assets/images/create_account.png
+    - assets/images/landing_web.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
